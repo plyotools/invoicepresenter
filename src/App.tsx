@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { Container, FileInput, Table, Title, Stack, Alert, ActionIcon, Group, Anchor, Tooltip, Button } from '@mantine/core'
-import { showNotification } from '@mantine/notifications'
 import { IconAlertCircle, IconCopy, IconCheck, IconUpload } from '@tabler/icons-react'
 import * as XLSX from 'xlsx'
 import { getRandomDoneMessage } from './doneMessages'
@@ -31,6 +30,7 @@ function App() {
   const [error, setError] = useState<string | null>(null)
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null)
   const [doneRows, setDoneRows] = useState<Set<number>>(new Set())
+  const [doneMessage, setDoneMessage] = useState<string | null>(null)
 
   const handleFileUpload = async (uploadedFile: File | null) => {
     setError(null)
@@ -171,15 +171,11 @@ function App() {
     // Show fun confirmation message when marking as done
     if (isMarkingDone) {
       const message = getRandomDoneMessage()
-      showNotification({
-        id: `done-${index}-${Date.now()}`,
-        title: '💰 Done!',
-        message: message,
-        color: 'green',
-        autoClose: 5000,
-        icon: <IconCheck size={18} />,
-        withBorder: true,
-      })
+      setDoneMessage(message)
+      // Hide message after 5 seconds
+      setTimeout(() => {
+        setDoneMessage(null)
+      }, 5000)
     }
   }
 
@@ -188,22 +184,17 @@ function App() {
       <Stack gap="lg">
         <Title order={1}>💰 Invoice Presenter</Title>
         
-        {/* Test notification button - remove after verification */}
-        <Button 
-          onClick={() => {
-            const message = getRandomDoneMessage()
-            showNotification({
-              title: '💰 Test',
-              message: message,
-              color: 'green',
-              autoClose: 5000,
-            })
-          }}
-          variant="outline"
-          size="xs"
-        >
-          Test Notification
-        </Button>
+        {doneMessage && (
+          <Alert
+            icon={<IconCheck size={18} />}
+            title="💰 Done!"
+            color="green"
+            onClose={() => setDoneMessage(null)}
+            withCloseButton
+          >
+            {doneMessage}
+          </Alert>
+        )}
         
         <Stack gap="md">
           <FileInput
