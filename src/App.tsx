@@ -194,6 +194,23 @@ function App() {
       <Stack gap="lg">
         <Title order={1}>💰 Invoice Presenter</Title>
         
+        {/* Test notification button - remove after verification */}
+        <Button 
+          onClick={() => {
+            const message = getRandomDoneMessage()
+            notifications.show({
+              title: '💰 Test',
+              message: message,
+              color: 'green',
+              autoClose: 5000,
+            })
+          }}
+          variant="outline"
+          size="xs"
+        >
+          Test Notification
+        </Button>
+        
         <Stack gap="md">
           <FileInput
             label="Upload Excel file"
