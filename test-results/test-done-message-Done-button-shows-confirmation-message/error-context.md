@@ -1,0 +1,46 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e4]:
+  - heading "Invoice Presenter" [level=1] [ref=e5]
+  - generic [ref=e7]:
+    - generic [ref=e8]: Upload Excel file
+    - generic [ref=e9]:
+      - img [ref=e11]
+      - button "Upload Excel file" [ref=e14] [cursor=pointer]:
+        - generic [ref=e15]: test.xlsx
+  - table [ref=e16]:
+    - rowgroup [ref=e17]:
+      - row "Account Name Issue Key Issue Summary Work Description Logged Hours Work Date Full Name Done" [ref=e18]:
+        - columnheader "Account Name" [ref=e19]
+        - columnheader "Issue Key" [ref=e20]
+        - columnheader "Issue Summary" [ref=e21]
+        - columnheader "Work Description" [ref=e22]
+        - columnheader "Logged Hours" [ref=e23]
+        - columnheader "Work Date" [ref=e24]
+        - columnheader "Full Name" [ref=e25]
+        - columnheader "Done" [ref=e26]
+    - rowgroup [ref=e27]:
+      - row "Test Account TEST-1 Test Issue Test work 2.5 2024-01-01 Test User Done" [ref=e28]:
+        - cell "Test Account" [ref=e29]:
+          - generic [ref=e30]: Test Account
+        - cell "TEST-1" [ref=e31]:
+          - link "TEST-1" [ref=e32] [cursor=pointer]:
+            - /url: https://plyolabs.atlassian.net/browse/TEST-1
+        - cell "Test Issue" [ref=e33]:
+          - generic [ref=e34]: Test Issue
+        - cell "Test work" [ref=e35]:
+          - generic [ref=e36]:
+            - generic [ref=e37]: Test work
+            - button [ref=e38] [cursor=pointer]:
+              - img [ref=e40]
+        - cell "2.5" [ref=e43]:
+          - generic [ref=e44]: "2.5"
+        - cell "2024-01-01" [ref=e45]:
+          - generic [ref=e46]: 2024-01-01
+        - cell "Test User" [ref=e47]:
+          - generic [ref=e48]: Test User
+        - cell "Done" [ref=e49]:
+          - button "Done" [active] [ref=e50] [cursor=pointer]:
+            - generic [ref=e52]: Done
+```

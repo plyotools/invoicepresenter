@@ -12,7 +12,9 @@
     "dev:all": "npm run dev:web & npm run dev:api",
     "diagnose": "tail -n 50 .dev.log 2>/dev/null || echo 'No .dev.log found'; echo ''; echo 'Port assignments:'; cat .cursor/ports.json 2>/dev/null || echo 'No ports.json found'; echo ''; echo 'Node version:'; node --version; echo 'NPM version:'; npm --version",
     "ship": "npm test 2>/dev/null || true; npm run build 2>/dev/null || true; git add . && git commit -m 'Ship changes' && git push",
-    "release": "ccc release-project --path ."
+    "release": "ccc release-project --path .",
+    "test:done": "playwright test test-done-message.spec.ts",
+    "test:done:loop": "node test-loop.js"
   },
   "dependencies": {
     "@mantine/core": "^7.0.0",
@@ -24,9 +26,11 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "@playwright/test": "^1.57.0",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "@vitejs/plugin-react": "^4.2.0",
+    "playwright": "^1.57.0",
     "typescript": "^5.2.2",
     "vite": "^5.0.0"
   }

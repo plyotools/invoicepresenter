@@ -156,7 +156,8 @@ function App() {
   }
 
   const toggleDone = (index: number) => {
-    const isMarkingDone = !doneRows.has(index)
+    const wasDone = doneRows.has(index)
+    const willBeDone = !wasDone
     
     setDoneRows(prev => {
       const newSet = new Set(prev)
@@ -168,8 +169,8 @@ function App() {
       return newSet
     })
 
-    // Show fun confirmation message when marking as done
-    if (isMarkingDone) {
+    // Show fun confirmation message when marking as done (not when unmarking)
+    if (willBeDone && !wasDone) {
       const message = getRandomDoneMessage()
       setDoneMessage(message)
       // Hide message after 5 seconds
@@ -184,17 +185,16 @@ function App() {
       <Stack gap="lg">
         <Title order={1}>💰 Invoice Presenter</Title>
         
-        {doneMessage && (
-          <Alert
-            icon={<IconCheck size={18} />}
-            title="💰 Done!"
-            color="green"
-            onClose={() => setDoneMessage(null)}
-            withCloseButton
-          >
-            {doneMessage}
-          </Alert>
-        )}
+        <Alert
+          icon={<IconCheck size={18} />}
+          title="💰 Done!"
+          color="green"
+          onClose={() => setDoneMessage(null)}
+          withCloseButton
+          style={{ display: doneMessage ? 'block' : 'none' }}
+        >
+          {doneMessage || ''}
+        </Alert>
         
         <Stack gap="md">
           <FileInput
