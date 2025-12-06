@@ -4,7 +4,7 @@ package-lock.json
 
 # Build outputs
 dist/
-standalone/
+# standalone/ - Keep this for GitHub Pages deployment
 
 # IDE
 .vscode/
