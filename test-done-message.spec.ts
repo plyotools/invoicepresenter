@@ -23,51 +23,41 @@ test('Done button shows confirmation message', async ({ page }) => {
   // Wait for table to appear
   await page.waitForSelector('table', { timeout: 10000 });
   
-  // Find a "Done" button that is NOT already marked (outline variant, not filled)
+  // Find a "Done" button - now using plain HTML button
   const allDoneButtons = page.locator('button:has-text("Done")');
   const buttonCount = await allDoneButtons.count();
+  console.log(`Found ${buttonCount} Done buttons`);
   
   let doneButton = allDoneButtons.first();
   
-  // Check if button is already done (filled variant)
-  const variant = await doneButton.getAttribute('data-variant');
-  const isAlreadyDone = variant === 'filled';
+  // Check if button is already done (green background)
+  const bgColor = await doneButton.evaluate((btn: HTMLButtonElement) => {
+    return window.getComputedStyle(btn).backgroundColor;
+  });
+  const isAlreadyDone = bgColor.includes('51') || bgColor.includes('rgb(81, 207, 102)');
   
-  console.log(`Button variant: ${variant}, isAlreadyDone: ${isAlreadyDone}`);
+  console.log(`Button bgColor: ${bgColor}, isAlreadyDone: ${isAlreadyDone}`);
   
   // If already done, unmark it first
   if (isAlreadyDone) {
     console.log('Unmarking button first...');
     await doneButton.click();
-    await page.waitForTimeout(1000); // Wait for state update
-    // Verify it's now unmarked
-    const newVariant = await doneButton.getAttribute('data-variant');
-    console.log(`After unmark, variant: ${newVariant}`);
+    await page.waitForTimeout(1000);
   }
   
   await expect(doneButton).toBeVisible();
   
-  // Now click to mark it as done
-  console.log('Clicking to mark as done...');
-  
   // Listen for console.log to see if toggleDone is called
   page.on('console', msg => {
     const text = msg.text();
-    if (text.includes('toggleDone') || text.includes('Setting done message') || text.includes('Not showing')) {
+    if (text.includes('HTML button clicked') || text.includes('toggleDone') || text.includes('Setting done message')) {
       console.log('Browser console:', text);
     }
   });
   
-  // Try clicking via Playwright first (more reliable)
+  // Click the button
+  console.log('Clicking to mark as done...');
   await doneButton.click();
-  
-  // Also try via JavaScript as backup
-  await doneButton.evaluate((btn: HTMLButtonElement) => {
-    console.log('Also clicking via JS, button type:', btn.type, 'onClick exists:', !!(btn as any).onclick);
-    // Trigger click event
-    const event = new MouseEvent('click', { bubbles: true, cancelable: true });
-    btn.dispatchEvent(event);
-  });
   
   // Wait a bit for React to process
   await page.waitForTimeout(2000);
@@ -93,7 +83,10 @@ test('Done button shows confirmation message', async ({ page }) => {
   // Check window for doneMessage and if function was called
   const windowData = await page.evaluate(() => ({
     message: (window as any).__doneMessage,
-    called: (window as any).__toggleDoneCalled,
+    toggleDoneCalled: (window as any).__toggleDoneCalled,
+    toggleDoneIndex: (window as any).__toggleDoneIndex,
+    toggleDoneWasDone: (window as any).__toggleDoneWasDone,
+    toggleDoneWillBeDone: (window as any).__toggleDoneWillBeDone,
     willBeDone: (window as any).__willBeDone,
     wasDone: (window as any).__wasDone,
     error: (window as any).__error
