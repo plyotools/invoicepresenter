@@ -174,27 +174,38 @@ function App() {
 
     // Show fun confirmation message when marking as done (not when unmarking)
     if (willBeDone) {
-      const message = getRandomDoneMessage()
-      console.log('Setting done message:', message)
-      // Set in window immediately for testing
-      if (typeof window !== 'undefined') {
-        (window as any).__doneMessage = message
-        (window as any).__toggleDoneCalled = true
-      }
-      setDoneMessage(message)
-      // Hide message after 5 seconds
-      setTimeout(() => {
-        setDoneMessage(null)
+      try {
+        const message = getRandomDoneMessage()
+        console.log('Setting done message:', message)
+        // Set in window immediately for testing
         if (typeof window !== 'undefined') {
-          (window as any).__doneMessage = null
+          (window as any).__doneMessage = message
+          (window as any).__toggleDoneCalled = true
+          (window as any).__willBeDone = willBeDone
+          (window as any).__wasDone = wasDone
         }
-      }, 5000)
+        setDoneMessage(message)
+        // Hide message after 5 seconds
+        setTimeout(() => {
+          setDoneMessage(null)
+          if (typeof window !== 'undefined') {
+            (window as any).__doneMessage = null
+          }
+        }, 5000)
+      } catch (error) {
+        console.error('Error getting message:', error)
+        if (typeof window !== 'undefined') {
+          (window as any).__error = String(error)
+        }
+      }
     } else {
-      console.log('Not showing message - unmarking')
+      console.log('Not showing message - unmarking', { wasDone, willBeDone })
       // Clear message when unmarking
       setDoneMessage(null)
       if (typeof window !== 'undefined') {
         (window as any).__doneMessage = null
+        (window as any).__willBeDone = willBeDone
+        (window as any).__wasDone = wasDone
       }
     }
   }
