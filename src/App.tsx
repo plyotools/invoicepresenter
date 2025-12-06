@@ -168,7 +168,7 @@ function App() {
   return (
     <Container size="xl" py="xl">
       <Stack gap="lg">
-        <Title order={1}>Invoice Presenter</Title>
+        <Title order={1}>💰 Invoice Presenter</Title>
         
         <Stack gap="md">
           <FileInput
