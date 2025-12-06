@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Container, FileInput, Table, Title, Stack, Alert, ActionIcon, Group, Anchor, Tooltip, Button } from '@mantine/core'
-import { notifications } from '@mantine/notifications'
+import { showNotification } from '@mantine/notifications'
 import { IconAlertCircle, IconCopy, IconCheck, IconUpload } from '@tabler/icons-react'
 import * as XLSX from 'xlsx'
 import { getRandomDoneMessage } from './doneMessages'
@@ -171,7 +171,7 @@ function App() {
     // Show fun confirmation message when marking as done
     if (isMarkingDone) {
       const message = getRandomDoneMessage()
-      notifications.show({
+      showNotification({
         id: `done-${index}-${Date.now()}`,
         title: '💰 Done!',
         message: message,
@@ -192,7 +192,7 @@ function App() {
         <Button 
           onClick={() => {
             const message = getRandomDoneMessage()
-            notifications.show({
+            showNotification({
               title: '💰 Test',
               message: message,
               color: 'green',
