@@ -22,5 +22,5 @@ export default defineConfig({
     },
     cssCodeSplit: false,
   },
-  base: './',
+  base: '/invoicepresenter/',
 })
