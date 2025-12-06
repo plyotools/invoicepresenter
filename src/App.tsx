@@ -159,6 +159,8 @@ function App() {
     const wasDone = doneRows.has(index)
     const willBeDone = !wasDone
     
+    console.log('toggleDone called:', { index, wasDone, willBeDone })
+    
     // Update doneRows state
     setDoneRows(prev => {
       const newSet = new Set(prev)
@@ -173,14 +175,27 @@ function App() {
     // Show fun confirmation message when marking as done (not when unmarking)
     if (willBeDone) {
       const message = getRandomDoneMessage()
+      console.log('Setting done message:', message)
+      // Set in window immediately for testing
+      if (typeof window !== 'undefined') {
+        (window as any).__doneMessage = message
+        (window as any).__toggleDoneCalled = true
+      }
       setDoneMessage(message)
       // Hide message after 5 seconds
       setTimeout(() => {
         setDoneMessage(null)
+        if (typeof window !== 'undefined') {
+          (window as any).__doneMessage = null
+        }
       }, 5000)
     } else {
+      console.log('Not showing message - unmarking')
       // Clear message when unmarking
       setDoneMessage(null)
+      if (typeof window !== 'undefined') {
+        (window as any).__doneMessage = null
+      }
     }
   }
 
@@ -189,18 +204,41 @@ function App() {
       <Stack gap="lg">
         <Title order={1}>💰 Invoice Presenter</Title>
         
-        {/* Debug: Always show if doneMessage exists */}
-        {doneMessage ? (
-          <Alert
-            icon={<IconCheck size={18} />}
-            title="💰 Done!"
-            color="green"
-            onClose={() => setDoneMessage(null)}
-            withCloseButton
+        {/* Show confirmation message when item is marked as done */}
+        {doneMessage && (
+          <div 
             data-testid="done-message-alert"
+            style={{
+              padding: '12px 16px',
+              backgroundColor: '#d4edda',
+              border: '1px solid #c3e6cb',
+              borderRadius: '4px',
+              color: '#155724',
+              marginBottom: '16px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}
           >
-            {doneMessage}
-          </Alert>
+            <IconCheck size={18} />
+            <div>
+              <strong>💰 Done!</strong>
+              <div>{doneMessage}</div>
+            </div>
+            <button
+              onClick={() => setDoneMessage(null)}
+              style={{
+                marginLeft: 'auto',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: '18px',
+                color: '#155724'
+              }}
+            >
+              ×
+            </button>
+          </div>
         )}
         
         <Stack gap="md">

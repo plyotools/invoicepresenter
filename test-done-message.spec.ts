@@ -24,45 +24,40 @@ test('Done button shows confirmation message', async ({ page }) => {
   await page.waitForSelector('table', { timeout: 10000 });
   
   // Find a "Done" button that is NOT already marked (outline variant, not filled)
-  // First, check if any button is not done
   const allDoneButtons = page.locator('button:has-text("Done")');
   const buttonCount = await allDoneButtons.count();
   
-  let doneButton;
-  let buttonIndex = 0;
+  let doneButton = allDoneButtons.first();
   
-  // Find a button that's not already done (outline variant)
-  for (let i = 0; i < buttonCount; i++) {
-    const btn = allDoneButtons.nth(i);
-    const variant = await btn.getAttribute('data-variant');
-    if (variant === 'outline' || !variant) {
-      doneButton = btn;
-      buttonIndex = i;
-      break;
-    }
-  }
+  // Check if button is already done (filled variant)
+  const variant = await doneButton.getAttribute('data-variant');
+  const isAlreadyDone = variant === 'filled';
   
-  // If all are done, click one to unmark it first, then mark it again
-  if (!doneButton) {
-    doneButton = allDoneButtons.first();
-    await doneButton.click(); // Unmark it
-    await page.waitForTimeout(500); // Wait for state update
+  console.log(`Button variant: ${variant}, isAlreadyDone: ${isAlreadyDone}`);
+  
+  // If already done, unmark it first
+  if (isAlreadyDone) {
+    console.log('Unmarking button first...');
+    await doneButton.click();
+    await page.waitForTimeout(1000); // Wait for state update
+    // Verify it's now unmarked
+    const newVariant = await doneButton.getAttribute('data-variant');
+    console.log(`After unmark, variant: ${newVariant}`);
   }
   
   await expect(doneButton).toBeVisible();
   
-  // Click the Done button to mark it as done
+  // Now click to mark it as done
+  console.log('Clicking to mark as done...');
   await doneButton.click();
   
-  // Also try setting doneMessage directly via React DevTools or window
-  await page.evaluate(() => {
-    // Try to find React component and set state directly
-    const root = document.getElementById('root');
-    if (root && (root as any)._reactInternalInstance) {
-      // This is a fallback - try to trigger state update
-      console.log('Root found, trying to set state...');
-    }
-  });
+  // Check window for doneMessage and if function was called
+  await page.waitForTimeout(1000);
+  const windowData = await page.evaluate(() => ({
+    message: (window as any).__doneMessage,
+    called: (window as any).__toggleDoneCalled
+  }));
+  console.log('Window data:', JSON.stringify(windowData));
   
   // Wait for React to update - check multiple times with longer waits
   let alertFound = false;
