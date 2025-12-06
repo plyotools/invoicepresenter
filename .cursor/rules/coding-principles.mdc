@@ -10,6 +10,14 @@ This document defines the core coding principles and standards for all projects 
 - The `.cursorrules` file in the project root explicitly requires you to read these principles
 - Violating these principles is not acceptable - they ensure code quality and maintainability
 
+## "CP" Shorthand Reminder
+- **When user types "CP" anywhere**: This is a reminder to follow Coding Principles - user can use it at any point in the conversation
+- **Corrective reminder**: If user writes "CP", they may believe you're not following principles - treat it as a signal to review and correct
+- **Immediately review**: Check your work against all principles in this file
+- **Apply standards**: Ensure code quality, maintainability, security, and best practices
+- **No exceptions**: "CP" means you must verify you're following all coding principles and adjust if needed
+- **Use anytime**: User can write "CP" whenever they want to remind you of principles - it works anywhere in the conversation
+
 ## Code Quality Standards
 
 ### 1. Clarity and Readability

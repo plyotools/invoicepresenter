@@ -1,13 +1,13 @@
 {
   "schemaVersion": "1.0",
   "services": {
-    "web": {
-      "port": 5132,
-      "url": "http://localhost:5132"
-    },
     "api": {
       "port": 8018,
       "url": "http://localhost:8018"
+    },
+    "web": {
+      "port": 5132,
+      "url": "http://localhost:5132"
     }
   }
 }

@@ -1,0 +1,60 @@
+# Cursor Control Center - Mandatory Rules
+
+**CRITICAL**: You MUST read and follow ALL rules in the `.cursor/rules/` directory. These rules are MANDATORY and apply to ALL conversations.
+
+## Required Reading
+
+Before responding to any request, you MUST be aware of these rules:
+
+### PRIMARY RULES (Read First):
+1. **`.cursor/rules/agent-comm.mdc`** - Communication rules, command execution, debugging flows
+2. **`.cursor/rules/coding-principles.mdc`** - Coding standards, best practices, AI agent guidelines
+
+**CRITICAL**: These two rules work together - agent-comm defines HOW to communicate, coding-principles defines WHAT standards to follow. Both are mandatory.
+
+### WORKFLOW RULES:
+3. **`.cursor/rules/launch.mdc`** - Launch command procedures
+4. **`.cursor/rules/release.mdc`** - Release command procedures
+5. **`.cursor/rules/runtime.mdc`** - Runtime and logging rules
+6. **`.cursor/rules/ship.mdc`** - Ship It command rules
+
+## Key Principles You MUST Follow
+
+- **MANDATORY: End every response with**: "In accordance with coding principles and agreed communications I have..." followed by what you actually did to practice them (proof of compliance through demonstrated actions)
+- **User is NOT a developer** - Use simple, clear language - avoid technical jargon
+- **Keep it short** - Be concise and to the point - avoid lengthy explanations
+- **Always provide recommendations** - Don't just explain, provide actionable next steps
+- **If stuck, recommend research** - Suggest researching external implementations with similar issues
+- **When user reports an issue**: Find acceptance criteria, define verification, fix it, verify it works, don't stop until proven fixed
+- **NEVER say "fixed" without verification** - Always test and prove the fix works first
+- **NEVER ask users to run terminal commands** - execute them yourself or provide copy-paste code blocks
+- **Always read files directly** - never ask users to check logs, ports, or configurations
+- **Execute commands directly** - use available tools to run commands unless physically impossible
+- **Verify by reading files** - check `.dev.log`, `.cursor/ports.json`, etc. directly
+- **Follow all workflow rules** - launch, release, ship commands have specific procedures
+
+## Rule Enforcement
+
+- These rules are synced from the Cursor Control Center
+- Rules version is tracked in `.cursor/control-center.json`
+- **Agency Principle**: When rules are updated in Control Center, they automatically apply to ALL projects
+- **Distribution reporting**: The sync command reports how many projects received updates
+- If rules seem outdated, check the version and sync if needed
+- All rules are MANDATORY - not suggestions or optional guidelines
+
+## When Starting a Conversation
+
+1. Check if `.cursor/rules/` directory exists
+2. **Read BOTH `agent-comm.mdc` AND `coding-principles.mdc` together** - they work as a pair
+3. Understand: agent-comm = HOW to communicate, coding-principles = WHAT standards to follow
+4. Follow all rules consistently throughout the conversation
+
+## Shorthand Reminders
+
+- **"CP" = Coding Principles**: When user types "CP" anywhere, immediately review and apply coding principles
+- **Corrective reminder**: User can write "CP" at any point if they believe you're not following principles - treat it as a signal to review and correct
+- **Read coding-principles.mdc**: Use "CP" as a reminder to check your work against all standards
+- **Works anywhere**: "CP" can be used at any point in the conversation as a reminder or corrective signal
+
+**Remember**: These rules ensure consistency, quality, and efficiency across all projects. Following them is not optional.
+
