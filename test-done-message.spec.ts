@@ -58,10 +58,15 @@ test('Done button shows confirmation message', async ({ page }) => {
     }
   });
   
-  // Try clicking via JavaScript to ensure it works
+  // Try clicking via Playwright first (more reliable)
+  await doneButton.click();
+  
+  // Also try via JavaScript as backup
   await doneButton.evaluate((btn: HTMLButtonElement) => {
-    console.log('Clicking button via JS, onClick:', (btn as any).onclick);
-    btn.click();
+    console.log('Also clicking via JS, button type:', btn.type, 'onClick exists:', !!(btn as any).onclick);
+    // Trigger click event
+    const event = new MouseEvent('click', { bubbles: true, cancelable: true });
+    btn.dispatchEvent(event);
   });
   
   // Wait a bit for React to process

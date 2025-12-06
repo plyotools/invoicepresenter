@@ -159,20 +159,10 @@ function App() {
     const wasDone = doneRows.has(index)
     const willBeDone = !wasDone
     
-    console.log('toggleDone called:', { index, wasDone, willBeDone })
+    console.log('toggleDone called:', { index, wasDone, willBeDone, doneRowsSize: doneRows.size })
     
-    // Update doneRows state
-    setDoneRows(prev => {
-      const newSet = new Set(prev)
-      if (newSet.has(index)) {
-        newSet.delete(index)
-      } else {
-        newSet.add(index)
-      }
-      return newSet
-    })
-
     // Show fun confirmation message when marking as done (not when unmarking)
+    // Do this BEFORE state update to ensure it happens
     if (willBeDone) {
       try {
         const message = getRandomDoneMessage()
@@ -208,6 +198,17 @@ function App() {
         ;(window as any).__wasDone = wasDone
       }
     }
+    
+    // Update doneRows state
+    setDoneRows(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(index)) {
+        newSet.delete(index)
+      } else {
+        newSet.add(index)
+      }
+      return newSet
+    })
   }
 
   return (

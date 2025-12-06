@@ -41,6 +41,6 @@
         - cell "Test User" [ref=e47]:
           - generic [ref=e48]: Test User
         - cell "Done" [ref=e49]:
-          - button "Done" [ref=e50] [cursor=pointer]:
+          - button "Done" [active] [ref=e50] [cursor=pointer]:
             - generic [ref=e52]: Done
 ```
