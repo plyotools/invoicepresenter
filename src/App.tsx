@@ -201,23 +201,7 @@ function App() {
                 <Table.Th style={{ width: '12.5%' }}>Account Name</Table.Th>
                 <Table.Th style={{ width: '12.5%' }}>Issue Key</Table.Th>
                 <Table.Th style={{ width: '12.5%' }}>Issue Summary</Table.Th>
-                <Table.Th style={{ width: '12.5%' }}>
-                  <Group gap="xs">
-                    Work Description
-                    <Tooltip label="Copy all work descriptions">
-                      <ActionIcon
-                        variant="subtle"
-                        size="sm"
-                        onClick={() => {
-                          const allDescriptions = tableData.map(r => r.workDescription).join('\n')
-                          navigator.clipboard.writeText(allDescriptions)
-                        }}
-                      >
-                        <IconCopy size={16} />
-                      </ActionIcon>
-                    </Tooltip>
-                  </Group>
-                </Table.Th>
+                <Table.Th style={{ width: '12.5%' }}>Work Description</Table.Th>
                 <Table.Th style={{ width: '12.5%' }}>Logged Hours</Table.Th>
                 <Table.Th style={{ width: '12.5%' }}>Work Date</Table.Th>
                 <Table.Th style={{ width: '12.5%' }}>Full Name</Table.Th>
