@@ -180,9 +180,9 @@ function App() {
         // Set in window immediately for testing
         if (typeof window !== 'undefined') {
           (window as any).__doneMessage = message
-          (window as any).__toggleDoneCalled = true
-          (window as any).__willBeDone = willBeDone
-          (window as any).__wasDone = wasDone
+          ;(window as any).__toggleDoneCalled = true
+          ;(window as any).__willBeDone = willBeDone
+          ;(window as any).__wasDone = wasDone
         }
         setDoneMessage(message)
         // Hide message after 5 seconds
@@ -203,9 +203,9 @@ function App() {
       // Clear message when unmarking
       setDoneMessage(null)
       if (typeof window !== 'undefined') {
-        (window as any).__doneMessage = null
-        (window as any).__willBeDone = willBeDone
-        (window as any).__wasDone = wasDone
+        ;(window as any).__doneMessage = null
+        ;(window as any).__willBeDone = willBeDone
+        ;(window as any).__wasDone = wasDone
       }
     }
   }
@@ -363,7 +363,12 @@ function App() {
                         size="xs"
                         variant={doneRows.has(index) ? 'filled' : 'outline'}
                         color="green"
-                        onClick={() => toggleDone(index)}
+                        onClick={(e) => {
+                          e.preventDefault()
+                          e.stopPropagation()
+                          console.log('Button clicked, calling toggleDone with index:', index)
+                          toggleDone(index)
+                        }}
                       >
                         Done
                       </Button>
