@@ -76,6 +76,11 @@ html = html.replace(/\n\s*\n/g, '\n')
 const standaloneHtmlPath = join(standaloneDir, 'index.html')
 writeFileSync(standaloneHtmlPath, html)
 
+// Create .nojekyll file for GitHub Pages
+const nojekyllPath = join(standaloneDir, '.nojekyll')
+writeFileSync(nojekyllPath, '')
+console.log('Created .nojekyll file for GitHub Pages')
+
 console.log('\n✅ Standalone build created!')
 console.log(`📁 Location: ${standaloneDir}/index.html`)
 console.log('📦 You can now open this HTML file directly in any browser!')
