@@ -172,12 +172,14 @@ function App() {
     if (isMarkingDone) {
       const message = getRandomDoneMessage()
       notifications.show({
+        id: `done-${index}-${Date.now()}`,
         title: '💰 Done!',
         message: message,
         color: 'green',
         autoClose: 5000,
         icon: <IconCheck size={18} />,
         withBorder: true,
+        loading: false,
       })
     }
   }
