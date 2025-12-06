@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { Container, FileInput, Table, Title, Stack, Alert, ActionIcon, Group, Anchor, Tooltip, Button } from '@mantine/core'
+import { notifications } from '@mantine/notifications'
 import { IconAlertCircle, IconCopy, IconCheck, IconUpload } from '@tabler/icons-react'
 import * as XLSX from 'xlsx'
+import { getRandomDoneMessage } from './doneMessages'
 
 interface TableRow {
   accountName: string
@@ -154,6 +156,8 @@ function App() {
   }
 
   const toggleDone = (index: number) => {
+    const isMarkingDone = !doneRows.has(index)
+    
     setDoneRows(prev => {
       const newSet = new Set(prev)
       if (newSet.has(index)) {
@@ -163,6 +167,19 @@ function App() {
       }
       return newSet
     })
+
+    // Show fun confirmation message when marking as done
+    if (isMarkingDone) {
+      const message = getRandomDoneMessage()
+      notifications.show({
+        title: '💰 Done!',
+        message: message,
+        color: 'green',
+        autoClose: 5000,
+        icon: <IconCheck size={18} />,
+        withBorder: true,
+      })
+    }
   }
 
   return (
