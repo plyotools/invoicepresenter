@@ -171,16 +171,21 @@ function App() {
     // Show fun confirmation message when marking as done
     if (isMarkingDone) {
       const message = getRandomDoneMessage()
-      notifications.show({
-        id: `done-${index}-${Date.now()}`,
-        title: '💰 Done!',
-        message: message,
-        color: 'green',
-        autoClose: 5000,
-        icon: <IconCheck size={18} />,
-        withBorder: true,
-        loading: false,
-      })
+      try {
+        notifications.show({
+          id: `done-${index}-${Date.now()}`,
+          title: '💰 Done!',
+          message: message,
+          color: 'green',
+          autoClose: 5000,
+          icon: <IconCheck size={18} />,
+          withBorder: true,
+        })
+      } catch (error) {
+        console.error('Notification error:', error)
+        // Fallback: show alert if notifications fail
+        alert(message)
+      }
     }
   }
 
