@@ -22,5 +22,5 @@ export default defineConfig({
     },
     cssCodeSplit: false,
   },
-  base: '/invoicepresenter/',
+  base: process.env.NODE_ENV === 'production' ? '/invoicepresenter/' : '/',
 })
