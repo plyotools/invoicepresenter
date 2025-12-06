@@ -171,21 +171,15 @@ function App() {
     // Show fun confirmation message when marking as done
     if (isMarkingDone) {
       const message = getRandomDoneMessage()
-      console.log('Marking as done, showing notification:', message)
-      // Use setTimeout to ensure state update completes first
-      setTimeout(() => {
-        console.log('Calling notifications.show')
-        notifications.show({
-          id: `done-${index}-${Date.now()}`,
-          title: '💰 Done!',
-          message: message,
-          color: 'green',
-          autoClose: 5000,
-          icon: <IconCheck size={18} />,
-          withBorder: true,
-        })
-        console.log('Notification called')
-      }, 100)
+      notifications.show({
+        id: `done-${index}-${Date.now()}`,
+        title: '💰 Done!',
+        message: message,
+        color: 'green',
+        autoClose: 5000,
+        icon: <IconCheck size={18} />,
+        withBorder: true,
+      })
     }
   }
 
