@@ -323,19 +323,20 @@ function App() {
                       <button
                         type="button"
                         onClick={() => {
-                          toggleDone(index)
-                          if (!doneRows.has(index)) {
-                            const message = getRandomDoneMessage()
-                            setDoneMessage(message)
-                            // Also show directly in DOM
-                            const alertDiv = document.getElementById('done-message-container')
-                            if (alertDiv) {
-                              alertDiv.innerHTML = `<div data-testid="done-message-alert" style="padding: 12px 16px; background-color: #d4edda; border: 1px solid #c3e6cb; border-radius: 4px; color: #155724; margin-bottom: 16px;"><strong>💰 Done!</strong> ${message}</div>`
-                              setTimeout(() => {
-                                if (alertDiv) alertDiv.innerHTML = ''
-                              }, 5000)
-                            }
+                          alert('Button clicked!') // Debug
+                          const wasDone = doneRows.has(index)
+                          const message = getRandomDoneMessage()
+                          setDoneMessage(message)
+                          // Also show directly in DOM
+                          const alertDiv = document.getElementById('done-message-container')
+                          if (alertDiv) {
+                            alertDiv.innerHTML = `<div data-testid="done-message-alert" style="padding: 12px 16px; background-color: #d4edda; border: 1px solid #c3e6cb; border-radius: 4px; color: #155724; margin-bottom: 16px;"><strong>💰 Done!</strong> ${message}</div>`
+                            setTimeout(() => {
+                              if (alertDiv) alertDiv.innerHTML = ''
+                              setDoneMessage(null)
+                            }, 5000)
                           }
+                          toggleDone(index)
                         }}
                         style={{
                           padding: '4px 12px',
