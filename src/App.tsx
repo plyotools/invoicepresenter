@@ -344,11 +344,27 @@ function App() {
                         data-testid={`done-button-${index}`}
                         onClick={(e) => {
                           e.stopPropagation()
-                          alert('Button clicked!') // Debug: verify click works
-                          console.log('Done button clicked, index:', index)
                           const message = getRandomDoneMessage()
-                          console.log('Setting message:', message)
+                          // Set in window for immediate access
+                          if (typeof window !== 'undefined') {
+                            (window as any).__doneMessage = message
+                            ;(window as any).__buttonClicked = true
+                          }
+                          // Force React update
                           setDoneMessage(message)
+                          // Also update DOM directly as backup
+                          if (typeof document !== 'undefined') {
+                            setTimeout(() => {
+                              const alertDiv = document.querySelector('[data-testid="done-message-alert"]') as HTMLElement
+                              if (alertDiv && message) {
+                                alertDiv.style.display = 'flex'
+                                const messageDiv = alertDiv.querySelector('div > div:last-child')
+                                if (messageDiv) {
+                                  messageDiv.textContent = message
+                                }
+                              }
+                            }, 0)
+                          }
                           toggleDone(index)
                         }}
                         style={{
