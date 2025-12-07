@@ -1,8 +1,5 @@
 {
   "rulesVersion": "2025.01.15-10",
-  "lastSync": "2025-12-07T00:17:40.900Z",
-  "repoUrl": "https://github.com/plyotools/invoice.git",
-  "lastRelease": "2025-12-06T18:20:56.829Z",
-  "lastReleaseBranch": "main",
-  "pagesUrl": "https://plyotools.github.io/invoice"
+  "lastSync": "2025-12-07T01:01:40.191Z",
+  "repoUrl": "https://github.com/plyotools/invoicepresenter.git"
 }

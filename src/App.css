@@ -1,0 +1,104 @@
+/* App styles */
+
+.done-alert {
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+  color: #155724;
+  padding: 12px 16px;
+  border-radius: 4px;
+  margin-top: 20px;
+  font-size: 16px;
+}
+
+/* Prevent text overlap in table cells */
+table {
+  table-layout: fixed;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+table td {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+  vertical-align: top;
+}
+
+/* Work description cell specific styling */
+table td:nth-child(4) {
+  max-width: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* Narrow columns for Issue Key, Hours, and Done */
+table th:nth-child(2),
+table td:nth-child(2) {
+  width: 8%;
+}
+
+table th:nth-child(5),
+table td:nth-child(5) {
+  width: 6%;
+}
+
+table th:nth-child(8),
+table td:nth-child(8) {
+  width: 8%;
+}
+
+/* Floating message at bottom of screen */
+.floating-message {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #2d3748;
+  color: white;
+  padding: 16px 24px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 15px;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease-out;
+  max-width: 90%;
+  text-align: center;
+  word-wrap: break-word;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateX(-50%) translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+}
+
+.floating-message.fade-out {
+  animation: fadeOut 0.5s ease-out forwards;
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+}
+
+/* Responsive table */
+@media (max-width: 768px) {
+  div[style*="margin: 0 30px"] {
+    margin: 0 15px !important;
+    width: calc(100% - 30px) !important;
+  }
+}
+
