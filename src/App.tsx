@@ -26,24 +26,30 @@ const REQUIRED_COLUMNS = [
 
 function App() {
   const [file, setFile] = useState<File | null>(null)
-  const [tableData, setTableData] = useState<TableRow[]>([])
+  // TEMPORARY: Add dummy data for testing
+  const [tableData, setTableData] = useState<TableRow[]>([
+    {
+      accountName: 'Test Account',
+      issueKey: 'TEST-1',
+      issueSummary: 'Test Issue',
+      workDescription: 'Test work',
+      loggedHours: '2.5',
+      workDate: '2024-01-01',
+      fullName: 'Test User'
+    }
+  ])
   const [error, setError] = useState<string | null>(null)
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null)
   const [doneRows, setDoneRows] = useState<Set<number>>(new Set())
   const [doneMessage, setDoneMessage] = useState<string | null>(null)
-  const [showMessage, setShowMessage] = useState(false)
   
   // Auto-hide message after 5 seconds
   useEffect(() => {
     if (doneMessage) {
-      setShowMessage(true)
       const timer = setTimeout(() => {
-        setShowMessage(false)
         setDoneMessage(null)
       }, 5000)
       return () => clearTimeout(timer)
-    } else {
-      setShowMessage(false)
     }
   }, [doneMessage])
 
@@ -269,7 +275,7 @@ function App() {
         <Title order={1}>💰 Invoice Presenter</Title>
         
         {/* Show confirmation message when item is marked as done */}
-        {showMessage && doneMessage && (
+        {doneMessage && (
           <div 
             data-testid="done-message-alert"
             style={{
