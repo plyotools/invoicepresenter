@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import { Stack, Title, FileInput, Table, Alert, Group, ActionIcon, Tooltip, Switch, Modal, Textarea, Button, Text, ScrollArea, TextInput } from '@mantine/core'
 import { IconCopy, IconCheck, IconX } from '@tabler/icons-react'
 import { getRandomDoneMessage, doneMessages, setDoneMessages } from './doneMessages'
@@ -140,15 +140,6 @@ function App() {
       clickCountRef.current = 0
     }, 500)
   }, [])
-
-  const handleSaveAllMessages = useCallback(() => {
-    // Strip numbers from all messages before saving
-    const cleanedMessages = editingMessages.map(msg => msg.replace(/^\d+\.\s*/, '').trim())
-    setMessagesList(cleanedMessages)
-    setEditingMessages(cleanedMessages)
-    setDoneMessages(cleanedMessages)
-    localStorage.setItem('doneMessages', JSON.stringify(cleanedMessages))
-  }, [editingMessages])
 
   const handleRemoveMessage = useCallback((index: number) => {
     const newMessages = messagesList.filter((_, i) => i !== index)
