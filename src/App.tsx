@@ -26,35 +26,12 @@ const REQUIRED_COLUMNS = [
 
 function App() {
   const [file, setFile] = useState<File | null>(null)
-  // TEMPORARY: Add dummy data for testing
-  const [tableData, setTableData] = useState<TableRow[]>([
-    {
-      accountName: 'Test Account',
-      issueKey: 'TEST-1',
-      issueSummary: 'Test Issue',
-      workDescription: 'Test work',
-      loggedHours: '2.5',
-      workDate: '2024-01-01',
-      fullName: 'Test User'
-    }
-  ])
+  const [tableData, setTableData] = useState<TableRow[]>([])
   const [error, setError] = useState<string | null>(null)
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null)
   const [doneRows, setDoneRows] = useState<Set<number>>(new Set())
   const [doneMessage, setDoneMessage] = useState<string | null>(null)
-  
-  const toggleDone = (index: number) => {
-    setDoneRows(prev => {
-      const newSet = new Set(prev)
-      if (newSet.has(index)) {
-        newSet.delete(index)
-      } else {
-        newSet.add(index)
-      }
-      return newSet
-    })
-  }
-  
+
   // Auto-hide message after 5 seconds
   useEffect(() => {
     if (doneMessage) {
@@ -68,10 +45,7 @@ function App() {
   const handleFileUpload = async (uploadedFile: File | null) => {
     setError(null)
     setFile(uploadedFile)
-    // Keep dummy data if no file uploaded (for testing)
-    if (uploadedFile) {
-      setTableData([])
-    }
+    setTableData([])
     setDoneRows(new Set())
 
     if (!uploadedFile) {
@@ -79,93 +53,44 @@ function App() {
     }
 
     try {
-      // Read the file as array buffer
       const arrayBuffer = await uploadedFile.arrayBuffer()
-      
-      // Parse the Excel file
       const workbook = XLSX.read(arrayBuffer, { type: 'array' })
-      
-      // Get the first worksheet
       const firstSheetName = workbook.SheetNames[0]
-      if (!firstSheetName) {
-        setError('No sheets found in the Excel file')
-        return
-      }
-      
       const worksheet = workbook.Sheets[firstSheetName]
-      
-      // Convert to JSON with header row
-      const jsonData = XLSX.utils.sheet_to_json(worksheet, { 
-        header: 1,
-        defval: '',
-        raw: false
-      }) as string[][]
-      
+      const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 }) as any[][]
+
       if (jsonData.length === 0) {
-        setError('No data found in the Excel file')
+        setError('Excel file is empty')
         return
       }
 
-      // Parse header row
-      const headerRow = jsonData[0].map(col => String(col || '').trim())
-      const headerLength = headerRow.length
-      
-      // Find column indices (case-insensitive, exact match preferred)
-      const columnIndices: { [key: string]: number } = {}
-
-      // Find indices for required columns
-      for (const requiredCol of REQUIRED_COLUMNS) {
-        const index = headerRow.findIndex(
-          col => col.toLowerCase() === requiredCol.toLowerCase()
-        )
+      const headers = jsonData[0] as string[]
+      const requiredIndices = REQUIRED_COLUMNS.map(col => {
+        const index = headers.findIndex(h => h && h.trim().toLowerCase() === col.toLowerCase())
         if (index === -1) {
-          setError(`Required column "${requiredCol}" not found in the data`)
-          return
+          throw new Error(`Required column "${col}" not found`)
         }
-        columnIndices[requiredCol] = index
-      }
+        return index
+      })
 
-      // Parse data rows
-      const parsedData: TableRow[] = []
-      for (let i = 1; i < jsonData.length; i++) {
-        const row = jsonData[i].map(cell => String(cell || ''))
-        
-        // Skip completely empty rows
-        if (row.length === 0 || row.every(cell => !cell.trim())) {
-          continue
-        }
-
-        // Pad row to match header length to handle trailing empty cells
-        while (row.length < headerLength) {
-          row.push('')
-        }
-
-        // Extract values using the column indices - now safe because row is padded
-        // Replace newlines in Work Description with spaces to ignore soft breaks
-        const workDescription = (row[columnIndices['Work Description']] ?? '')
-          .replace(/\r\n/g, ' ')
-          .replace(/\n/g, ' ')
-          .replace(/\r/g, ' ')
-          .replace(/\s+/g, ' ')
-          .trim()
-        
-        parsedData.push({
-          accountName: (row[columnIndices['Account Name']] ?? '').trim(),
-          issueKey: (row[columnIndices['Issue Key']] ?? '').trim(),
-          issueSummary: (row[columnIndices['Issue summary']] ?? '').trim(),
-          workDescription: workDescription,
-          loggedHours: (row[columnIndices['Logged Hours']] ?? '').trim(),
-          workDate: (row[columnIndices['Work date']] ?? '').trim(),
-          fullName: (row[columnIndices['Full name']] ?? '').trim(),
-        })
-      }
+      const parsedData: TableRow[] = jsonData.slice(1)
+        .filter(row => row && row.some(cell => cell !== null && cell !== undefined && cell !== ''))
+        .map(row => ({
+          accountName: String(row[requiredIndices[0]] || ''),
+          issueKey: String(row[requiredIndices[1]] || ''),
+          issueSummary: String(row[requiredIndices[2]] || ''),
+          workDescription: String(row[requiredIndices[3]] || ''),
+          loggedHours: String(row[requiredIndices[4]] || ''),
+          workDate: String(row[requiredIndices[5]] || ''),
+          fullName: String(row[requiredIndices[6]] || '')
+        }))
+        .filter(row => row.accountName || row.issueKey || row.issueSummary)
 
       if (parsedData.length === 0) {
-        setError('No data rows found after parsing')
+        setError('No valid data rows found in Excel file')
         return
       }
 
-      // Sort by Account Name alphabetically
       parsedData.sort((a, b) => {
         const nameA = a.accountName.toLowerCase()
         const nameB = b.accountName.toLowerCase()
@@ -191,26 +116,45 @@ function App() {
     }
   }
 
+  const handleDoneClick = (index: number) => {
+    const wasDone = doneRows.has(index)
+    
+    // Update done state
+    setDoneRows(prev => {
+      const newSet = new Set(prev)
+      if (wasDone) {
+        newSet.delete(index)
+      } else {
+        newSet.add(index)
+      }
+      return newSet
+    })
+
+    // Show message only when marking as done (not when unmarking)
+    if (!wasDone) {
+      const message = getRandomDoneMessage()
+      setDoneMessage(message)
+    } else {
+      setDoneMessage(null)
+    }
+  }
+
   return (
     <Container size="xl" py="xl">
       <Stack gap="lg">
         <Title order={1}>💰 Invoice Presenter</Title>
         
-        <div id="done-message-container"></div>
         {doneMessage && (
-          <div 
+          <Alert
             data-testid="done-message-alert"
-            style={{
-              padding: '12px 16px',
-              backgroundColor: '#d4edda',
-              border: '1px solid #c3e6cb',
-              borderRadius: '4px',
-              color: '#155724',
-              marginBottom: '16px'
-            }}
+            color="green"
+            icon={<IconCheck size={18} />}
+            title="💰 Done!"
+            onClose={() => setDoneMessage(null)}
+            withCloseButton
           >
-            <strong>💰 Done!</strong> {doneMessage}
-          </div>
+            {doneMessage}
+          </Alert>
         )}
         
         <Stack gap="md">
@@ -234,117 +178,110 @@ function App() {
           <Table
             striped
             highlightOnHover
-            style={{
-              tableLayout: 'fixed',
-              width: '100%',
-            }}
+            withTableBorder
+            withColumnBorders
+            verticalSpacing="sm"
+            horizontalSpacing="md"
+            layout="fixed"
           >
             <Table.Thead>
               <Table.Tr>
-                <Table.Th style={{ width: '12.5%' }}>Account Name</Table.Th>
-                <Table.Th style={{ width: '12.5%' }}>Issue Key</Table.Th>
-                <Table.Th style={{ width: '12.5%' }}>Issue Summary</Table.Th>
-                <Table.Th style={{ width: '12.5%' }}>Work Description</Table.Th>
-                <Table.Th style={{ width: '12.5%' }}>Logged Hours</Table.Th>
-                <Table.Th style={{ width: '12.5%' }}>Work Date</Table.Th>
-                <Table.Th style={{ width: '12.5%' }}>Full Name</Table.Th>
+                {REQUIRED_COLUMNS.map((col) => (
+                  <Table.Th key={col} style={{ width: '12.5%' }}>{col}</Table.Th>
+                ))}
                 <Table.Th style={{ width: '12.5%' }}>Done</Table.Th>
               </Table.Tr>
             </Table.Thead>
-              <Table.Tbody>
-                {tableData.map((row, index) => (
-                  <Table.Tr 
-                    key={index}
-                    style={{
-                      backgroundColor: doneRows.has(index) ? '#e8f5e9' : undefined
-                    }}
-                  >
-                    <Table.Td style={{ verticalAlign: 'top', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      <div style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
-                        {row.accountName}
-                      </div>
-                    </Table.Td>
-                    <Table.Td style={{ verticalAlign: 'top', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {row.issueKey ? (
-                        <Anchor
-                          href={`https://plyolabs.atlassian.net/browse/${row.issueKey}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{ wordBreak: 'break-word' }}
-                        >
-                          {row.issueKey}
-                        </Anchor>
-                      ) : (
-                        ''
-                      )}
-                    </Table.Td>
-                    <Table.Td style={{ verticalAlign: 'top' }}>
-                      <div style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', overflowWrap: 'break-word' }}>
-                        {row.issueSummary}
-                      </div>
-                    </Table.Td>
-                    <Table.Td style={{ verticalAlign: 'top' }}>
-                      <Group gap="xs" wrap="nowrap" align="flex-start">
-                        <div style={{ flex: 1, wordBreak: 'break-word', overflowWrap: 'break-word' }}>
-                          {row.workDescription}
-                        </div>
-                        <Tooltip label={copiedIndex === index ? 'Copied!' : 'Copy work description'}>
-                          <ActionIcon
-                            variant="subtle"
-                            size="sm"
-                            onClick={() => copyText(row.workDescription, index)}
-                            style={{ flexShrink: 0 }}
-                          >
-                            {copiedIndex === index ? (
-                              <IconCheck size={16} color="green" />
-                            ) : (
-                              <IconCopy size={16} />
-                            )}
-                          </ActionIcon>
-                        </Tooltip>
-                      </Group>
-                    </Table.Td>
-                    <Table.Td style={{ verticalAlign: 'top', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      <div style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
-                        {row.loggedHours}
-                      </div>
-                    </Table.Td>
-                    <Table.Td style={{ verticalAlign: 'top', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      <div style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
-                        {row.workDate}
-                      </div>
-                    </Table.Td>
-                    <Table.Td style={{ verticalAlign: 'top', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      <div style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
-                        {row.fullName}
-                      </div>
-                    </Table.Td>
-                    <Table.Td style={{ verticalAlign: 'top' }}>
-                      <button
-                        type="button"
-                        data-row-index={index}
-                        onClick={() => {
-                          const message = getRandomDoneMessage()
-                          setDoneMessage(message)
-                          toggleDone(index)
-                        }}
-                        style={{
-                          padding: '4px 12px',
-                          fontSize: '12px',
-                          border: doneRows.has(index) ? 'none' : '1px solid #ccc',
-                          backgroundColor: doneRows.has(index) ? '#51cf66' : 'transparent',
-                          color: doneRows.has(index) ? 'white' : '#333',
-                          borderRadius: '4px',
-                          cursor: 'pointer'
-                        }}
+            <Table.Tbody>
+              {tableData.map((row, index) => (
+                <Table.Tr 
+                  key={index}
+                  style={{
+                    backgroundColor: doneRows.has(index) ? '#e8f5e9' : undefined
+                  }}
+                >
+                  <Table.Td style={{ verticalAlign: 'top', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    <div style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
+                      {row.accountName}
+                    </div>
+                  </Table.Td>
+                  <Table.Td style={{ verticalAlign: 'top', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {row.issueKey ? (
+                      <Anchor
+                        href={`https://plyolabs.atlassian.net/browse/${row.issueKey}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ wordBreak: 'break-word' }}
                       >
-                        Done
-                      </button>
-                    </Table.Td>
-                  </Table.Tr>
-                ))}
-              </Table.Tbody>
-            </Table>
+                        {row.issueKey}
+                      </Anchor>
+                    ) : (
+                      ''
+                    )}
+                  </Table.Td>
+                  <Table.Td style={{ verticalAlign: 'top' }}>
+                    <div style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', overflowWrap: 'break-word' }}>
+                      {row.issueSummary}
+                    </div>
+                  </Table.Td>
+                  <Table.Td style={{ verticalAlign: 'top' }}>
+                    <Group gap="xs" wrap="nowrap" align="flex-start">
+                      <div style={{ flex: 1, wordBreak: 'break-word', overflowWrap: 'break-word' }}>
+                        {row.workDescription}
+                      </div>
+                      <Tooltip label={copiedIndex === index ? 'Copied!' : 'Copy work description'}>
+                        <ActionIcon
+                          variant="subtle"
+                          size="sm"
+                          onClick={() => copyText(row.workDescription, index)}
+                          style={{ flexShrink: 0 }}
+                        >
+                          {copiedIndex === index ? (
+                            <IconCheck size={16} color="green" />
+                          ) : (
+                            <IconCopy size={16} />
+                          )}
+                        </ActionIcon>
+                      </Tooltip>
+                    </Group>
+                  </Table.Td>
+                  <Table.Td style={{ verticalAlign: 'top', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    <div style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
+                      {row.loggedHours}
+                    </div>
+                  </Table.Td>
+                  <Table.Td style={{ verticalAlign: 'top', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    <div style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
+                      {row.workDate}
+                    </div>
+                  </Table.Td>
+                  <Table.Td style={{ verticalAlign: 'top', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    <div style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
+                      {row.fullName}
+                    </div>
+                  </Table.Td>
+                  <Table.Td style={{ verticalAlign: 'top' }}>
+                    <button
+                      type="button"
+                      data-testid={`done-button-${index}`}
+                      onClick={() => handleDoneClick(index)}
+                      style={{
+                        padding: '4px 12px',
+                        fontSize: '12px',
+                        border: doneRows.has(index) ? 'none' : '1px solid #ccc',
+                        backgroundColor: doneRows.has(index) ? '#51cf66' : 'transparent',
+                        color: doneRows.has(index) ? 'white' : '#333',
+                        borderRadius: '4px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Done
+                    </button>
+                  </Table.Td>
+                </Table.Tr>
+              ))}
+            </Table.Tbody>
+          </Table>
         )}
       </Stack>
     </Container>
@@ -352,4 +289,3 @@ function App() {
 }
 
 export default App
-

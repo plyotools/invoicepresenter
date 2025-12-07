@@ -167,14 +167,31 @@ test('Done button shows confirmation message', async ({ page }) => {
       break;
     }
     
+    // Check for Mantine Alert component by data-testid
+    const alertByTestId = await page.locator('[data-testid="done-message-alert"]').count();
+    if (alertByTestId > 0) {
+      const isVisible = await page.locator('[data-testid="done-message-alert"]').first().isVisible().catch(() => false);
+      if (isVisible) {
+        const text = await page.locator('[data-testid="done-message-alert"]').first().textContent().catch(() => '');
+        if (text && (text.includes('Trykk') || text.includes('Hold') || text.includes('Få') || text.includes('Done') || text.includes('💰'))) {
+          alertFound = true;
+          console.log(`✅ Alert found with data-testid: ${text.substring(0, 50)}`);
+          break;
+        }
+      }
+    }
+    
     // Check for Alert component by class name (Mantine uses specific classes)
     const alertByClass = await page.locator('[class*="mantine-Alert"], [class*="Alert-root"]').count();
     if (alertByClass > 0) {
-      const text = await page.locator('[class*="mantine-Alert"], [class*="Alert-root"]').first().textContent().catch(() => '');
-      if (text && (text.includes('Trykk') || text.includes('Hold') || text.includes('Få') || text.includes('Done'))) {
-        alertFound = true;
-        console.log(`✅ Alert element found: ${text.substring(0, 50)}`);
-        break;
+      const isVisible = await page.locator('[class*="mantine-Alert"], [class*="Alert-root"]').first().isVisible().catch(() => false);
+      if (isVisible) {
+        const text = await page.locator('[class*="mantine-Alert"], [class*="Alert-root"]').first().textContent().catch(() => '');
+        if (text && (text.includes('Trykk') || text.includes('Hold') || text.includes('Få') || text.includes('Done') || text.includes('💰'))) {
+          alertFound = true;
+          console.log(`✅ Alert element found: ${text.substring(0, 50)}`);
+          break;
+        }
       }
     }
     
