@@ -60308,3 +60308,50 @@ Port 5176 is in use, trying another one...
 
   ➜  Local:   http://localhost:5177/
   ➜  Network: use --host to expose
+
+> invoicer@0.1.0 dev:all
+> npm run dev:web & npm run dev:api
+
+
+> invoicer@0.1.0 dev:web
+> vite
+
+
+> invoicer@0.1.0 dev:api
+> echo 'Configure dev:api script for your project'
+
+Configure dev:api script for your project
+Port 5173 is in use, trying another one...
+Port 5174 is in use, trying another one...
+Port 5175 is in use, trying another one...
+Port 5176 is in use, trying another one...
+Port 5177 is in use, trying another one...
+
+  VITE v5.4.21  ready in 218 ms
+
+  ➜  Local:   http://localhost:5178/
+  ➜  Network: use --host to expose
+
+> invoicer@0.1.0 dev:all
+> npm run dev:web & npm run dev:api
+
+
+> invoicer@0.1.0 dev:api
+> echo 'Configure dev:api script for your project'
+
+
+> invoicer@0.1.0 dev:web
+> vite
+
+Configure dev:api script for your project
+Port 5173 is in use, trying another one...
+Port 5174 is in use, trying another one...
+Port 5175 is in use, trying another one...
+Port 5176 is in use, trying another one...
+Port 5177 is in use, trying another one...
+Port 5178 is in use, trying another one...
+
+  VITE v5.4.21  ready in 138 ms
+
+  ➜  Local:   http://localhost:5179/
+  ➜  Network: use --host to expose
