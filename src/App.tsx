@@ -194,41 +194,40 @@ function App() {
         <Title order={1}>💰 Invoice Presenter</Title>
         
         {/* Show confirmation message when item is marked as done */}
-        {doneMessage && (
-          <div 
-            data-testid="done-message-alert"
+        <div 
+          data-testid="done-message-alert"
+          style={{
+            padding: '12px 16px',
+            backgroundColor: '#d4edda',
+            border: '1px solid #c3e6cb',
+            borderRadius: '4px',
+            color: '#155724',
+            marginBottom: '16px',
+            display: doneMessage ? 'flex' : 'none',
+            alignItems: 'center',
+            gap: '8px'
+          }}
+        >
+          <IconCheck size={18} />
+          <div>
+            <strong>💰 Done!</strong>
+            {doneMessage && <div>{doneMessage}</div>}
+          </div>
+          <button
+            type="button"
+            onClick={() => setDoneMessage(null)}
             style={{
-              padding: '12px 16px',
-              backgroundColor: '#d4edda',
-              border: '1px solid #c3e6cb',
-              borderRadius: '4px',
-              color: '#155724',
-              marginBottom: '16px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px'
+              marginLeft: 'auto',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '18px',
+              color: '#155724'
             }}
           >
-            <IconCheck size={18} />
-            <div>
-              <strong>💰 Done!</strong>
-              <div>{doneMessage}</div>
-            </div>
-            <button
-              onClick={() => setDoneMessage(null)}
-              style={{
-                marginLeft: 'auto',
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                fontSize: '18px',
-                color: '#155724'
-              }}
-            >
-              ×
-            </button>
-          </div>
-        )}
+            ×
+          </button>
+        </div>
         
         <Stack gap="md">
           <FileInput
@@ -339,20 +338,14 @@ function App() {
                     <Table.Td style={{ verticalAlign: 'top' }}>
                       <button
                         type="button"
-                        data-row-index={index}
-                        onMouseDown={(e) => {
-                          e.preventDefault()
+                        data-testid={`done-button-${index}`}
+                        onClick={(e) => {
                           e.stopPropagation()
-                        }}
-                        onClick={() => {
+                          console.log('Done button clicked, index:', index)
                           const message = getRandomDoneMessage()
+                          console.log('Setting message:', message)
                           setDoneMessage(message)
                           toggleDone(index)
-                          setTimeout(() => setDoneMessage(null), 5000)
-                        }}
-                        onPointerDown={(e) => {
-                          e.preventDefault()
-                          e.stopPropagation()
                         }}
                         style={{
                           padding: '4px 12px',

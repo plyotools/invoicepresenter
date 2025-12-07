@@ -84,7 +84,9 @@ When a user starts a dialogue with **"check rules"** (or variations like "check 
 ### 2. Proactive Problem Solving
 - Anticipate potential issues and address them proactively
 - **Always provide recommendations**: Suggest solutions, not just identify problems
-- **If stuck, recommend research**: Suggest researching external implementations with similar issues
+- **If stuck, search online**: When encountering technical challenges, search for similar problems and solutions
+- **Try different approaches**: If the same approach fails 2-3 times, try something completely different
+- **Don't get stuck in loops**: Create a plan, think broadly, search for solutions
 - Offer alternatives when the first approach doesn't work
 - Verify assumptions by checking files, logs, or configurations
 - **Keep recommendations simple**: User is not a developer - explain in plain terms
