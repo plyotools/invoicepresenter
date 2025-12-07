@@ -214,7 +214,7 @@ function App() {
     <div style={{ margin: '24px 30px 0 30px', width: 'calc(100% - 60px)' }}>
       <Stack gap="md">
         <Group justify="space-between" align="flex-start">
-          <Title order={1}>Fakturering</Title>
+          <Title order={1}>💰 Fakturering</Title>
           <Switch
             label="Vis meldinger"
             checked={messagesEnabled}
