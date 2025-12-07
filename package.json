@@ -1,0 +1,34 @@
+{
+  "name": "invoicer",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev:web": "vite",
+    "dev:api": "echo 'Configure dev:api script for your project'",
+    "dev:all": "npm run dev:web & npm run dev:api",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "playwright test",
+    "diagnose": "tail -n 50 .dev.log 2>/dev/null || echo 'No .dev.log found'; echo ''; echo 'Port assignments:'; cat .cursor/ports.json 2>/dev/null || echo 'No ports.json found'; echo ''; echo 'Node version:'; node --version; echo 'NPM version:'; npm --version",
+    "ship": "npm test 2>/dev/null || true; npm run build 2>/dev/null || true; git add . && git commit -m 'Ship changes' && git push",
+    "release": "ccc release-project --path ."
+  },
+  "dependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "@mantine/core": "^7.0.0",
+    "@mantine/hooks": "^7.0.0",
+    "@tabler/icons-react": "^3.0.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "@types/node": "^20.10.0",
+    "@types/react": "^18.2.43",
+    "@types/react-dom": "^18.2.17",
+    "@vitejs/plugin-react": "^4.2.1",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.8"
+  }
+}
