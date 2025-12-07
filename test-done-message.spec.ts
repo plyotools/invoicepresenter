@@ -47,17 +47,59 @@ test('Done button shows confirmation message', async ({ page }) => {
   
   await expect(doneButton).toBeVisible();
   
-  // Listen for console.log to see if toggleDone is called
+  // Listen for ALL console messages
+  const consoleMessages: string[] = [];
   page.on('console', msg => {
     const text = msg.text();
-    if (text.includes('HTML button clicked') || text.includes('toggleDone') || text.includes('Setting done message')) {
-      console.log('Browser console:', text);
-    }
+    consoleMessages.push(text);
+    console.log(`[Browser Console] ${msg.type()}: ${text}`);
+  });
+  
+  // Also listen for page errors
+  page.on('pageerror', error => {
+    console.log(`[Page Error]: ${error.message}`);
   });
   
   // Click the button
   console.log('Clicking to mark as done...');
+  const buttonInfo = await doneButton.evaluate((btn: HTMLButtonElement) => {
+    return {
+      hasOnClick: !!(btn as any).onclick,
+      type: btn.type,
+      text: btn.textContent,
+      style: window.getComputedStyle(btn).backgroundColor,
+      dataIndex: btn.dataset.rowIndex
+    };
+  });
+  console.log('Button info before click:', buttonInfo);
+  
+  // Try calling toggleDone directly via window
+  const directCallResult = await page.evaluate((index) => {
+    console.log('Checking window.__toggleDone:', typeof (window as any).__toggleDone);
+    if ((window as any).__toggleDone) {
+      try {
+        (window as any).__toggleDone(parseInt(index));
+        return { called: true, method: 'window.__toggleDone', error: null };
+      } catch (e) {
+        return { called: false, method: 'window.__toggleDone', error: String(e) };
+      }
+    }
+    // Try to find and call the function another way
+    const buttons = document.querySelectorAll('button[data-row-index]');
+    if (buttons.length > 0) {
+      const btn = buttons[0] as HTMLButtonElement;
+      const clickEvent = new MouseEvent('click', { bubbles: true, cancelable: true });
+      btn.dispatchEvent(clickEvent);
+      return { called: true, method: 'dispatchEvent', error: null };
+    }
+    return { called: false, method: 'none', error: 'No toggleDone found' };
+  }, buttonInfo.dataIndex || '0');
+  console.log('Direct call result:', directCallResult);
+  
+  // Also click the button
   await doneButton.click();
+  
+  console.log('Button clicked, waiting for response...');
   
   // Wait a bit for React to process
   await page.waitForTimeout(2000);
@@ -80,6 +122,9 @@ test('Done button shows confirmation message', async ({ page }) => {
     });
   }
   
+  // Wait a bit for React to process
+  await page.waitForTimeout(1000);
+  
   // Check window for doneMessage and if function was called
   const windowData = await page.evaluate(() => ({
     message: (window as any).__doneMessage,
@@ -91,7 +136,13 @@ test('Done button shows confirmation message', async ({ page }) => {
     wasDone: (window as any).__wasDone,
     error: (window as any).__error
   }));
-  console.log('Window data:', JSON.stringify(windowData, null, 2));
+  console.log('Window data after click:', JSON.stringify(windowData, null, 2));
+  console.log('Console messages captured:', consoleMessages.length);
+  consoleMessages.forEach((msg, i) => {
+    if (msg.includes('button') || msg.includes('toggle') || msg.includes('Done') || msg.includes('message')) {
+      console.log(`  [${i}] ${msg}`);
+    }
+  });
   
   // Also check if button state changed
   const buttonStateAfter = await doneButton.getAttribute('data-variant');

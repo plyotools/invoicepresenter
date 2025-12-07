@@ -414,9 +414,30 @@ function App() {
                     <Table.Td style={{ verticalAlign: 'top' }}>
                       <button
                         type="button"
-                        onClick={() => {
-                          console.log('HTML button clicked, index:', index)
-                          toggleDone(index)
+                        data-row-index={index}
+                        onMouseDown={(e) => {
+                          e.preventDefault()
+                          e.stopPropagation()
+                        }}
+                        onClick={(e) => {
+                          e.preventDefault()
+                          e.stopPropagation()
+                          const idx = parseInt((e.currentTarget as HTMLButtonElement).dataset.rowIndex || '0')
+                          console.log('HTML button clicked, index:', idx)
+                          
+                          // Call toggleDone
+                          toggleDone(idx)
+                          
+                          // Also set message directly in DOM as backup
+                          const message = getRandomDoneMessage()
+                          if (typeof window !== 'undefined') {
+                            (window as any).__doneMessage = message
+                          }
+                          setDoneMessage(message)
+                        }}
+                        onPointerDown={(e) => {
+                          e.preventDefault()
+                          e.stopPropagation()
                         }}
                         style={{
                           padding: '4px 12px',
