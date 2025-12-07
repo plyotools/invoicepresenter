@@ -196,41 +196,22 @@ function App() {
       <Stack gap="lg">
         <Title order={1}>💰 Invoice Presenter</Title>
         
-        {/* Show confirmation message when item is marked as done */}
-        <div 
-          data-testid="done-message-alert"
-          style={{
-            padding: '12px 16px',
-            backgroundColor: '#d4edda',
-            border: '1px solid #c3e6cb',
-            borderRadius: '4px',
-            color: '#155724',
-            marginBottom: '16px',
-            display: doneMessage ? 'flex' : 'none',
-            alignItems: 'center',
-            gap: '8px'
-          }}
-        >
-          <IconCheck size={18} />
-          <div>
-            <strong>💰 Done!</strong>
-            {doneMessage && <div>{doneMessage}</div>}
-          </div>
-          <button
-            type="button"
-            onClick={() => setDoneMessage(null)}
+        <div id="done-message-container"></div>
+        {doneMessage && (
+          <div 
+            data-testid="done-message-alert"
             style={{
-              marginLeft: 'auto',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              fontSize: '18px',
-              color: '#155724'
+              padding: '12px 16px',
+              backgroundColor: '#d4edda',
+              border: '1px solid #c3e6cb',
+              borderRadius: '4px',
+              color: '#155724',
+              marginBottom: '16px'
             }}
           >
-            ×
-          </button>
-        </div>
+            <strong>💰 Done!</strong> {doneMessage}
+          </div>
+        )}
         
         <Stack gap="md">
           <FileInput
@@ -341,31 +322,20 @@ function App() {
                     <Table.Td style={{ verticalAlign: 'top' }}>
                       <button
                         type="button"
-                        data-testid={`done-button-${index}`}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          const message = getRandomDoneMessage()
-                          // Set in window for immediate access
-                          if (typeof window !== 'undefined') {
-                            (window as any).__doneMessage = message
-                            ;(window as any).__buttonClicked = true
-                          }
-                          // Force React update
-                          setDoneMessage(message)
-                          // Also update DOM directly as backup
-                          if (typeof document !== 'undefined') {
-                            setTimeout(() => {
-                              const alertDiv = document.querySelector('[data-testid="done-message-alert"]') as HTMLElement
-                              if (alertDiv && message) {
-                                alertDiv.style.display = 'flex'
-                                const messageDiv = alertDiv.querySelector('div > div:last-child')
-                                if (messageDiv) {
-                                  messageDiv.textContent = message
-                                }
-                              }
-                            }, 0)
-                          }
+                        onClick={() => {
                           toggleDone(index)
+                          if (!doneRows.has(index)) {
+                            const message = getRandomDoneMessage()
+                            setDoneMessage(message)
+                            // Also show directly in DOM
+                            const alertDiv = document.getElementById('done-message-container')
+                            if (alertDiv) {
+                              alertDiv.innerHTML = `<div data-testid="done-message-alert" style="padding: 12px 16px; background-color: #d4edda; border: 1px solid #c3e6cb; border-radius: 4px; color: #155724; margin-bottom: 16px;"><strong>💰 Done!</strong> ${message}</div>`
+                              setTimeout(() => {
+                                if (alertDiv) alertDiv.innerHTML = ''
+                              }, 5000)
+                            }
+                          }
                         }}
                         style={{
                           padding: '4px 12px',
