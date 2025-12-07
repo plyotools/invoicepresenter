@@ -1,22 +1,19 @@
 import { useState, useEffect } from 'react'
 import { Container, Title, Stack } from '@mantine/core'
-import { getRandomDoneMessage } from './doneMessages'
+import { doneMessages } from './doneMessages'
 
 function App() {
   const [doneMessage, setDoneMessage] = useState<string | null>(null)
 
-  // Auto-hide message after 5 seconds
   useEffect(() => {
     if (doneMessage) {
-      const timer = setTimeout(() => {
-        setDoneMessage(null)
-      }, 5000)
+      const timer = setTimeout(() => setDoneMessage(null), 5000)
       return () => clearTimeout(timer)
     }
   }, [doneMessage])
 
-  const handleDoneClick = () => {
-    const message = getRandomDoneMessage()
+  const handleClick = () => {
+    const message = doneMessages[Math.floor(Math.random() * doneMessages.length)]
     setDoneMessage(message)
   }
 
@@ -33,8 +30,7 @@ function App() {
               backgroundColor: '#d4edda',
               border: '1px solid #c3e6cb',
               borderRadius: '4px',
-              color: '#155724',
-              marginBottom: '16px'
+              color: '#155724'
             }}
           >
             <strong>💰 Done!</strong> {doneMessage}
@@ -44,7 +40,7 @@ function App() {
         <button
           type="button"
           data-testid="done-button"
-          onClick={handleDoneClick}
+          onClick={handleClick}
           style={{
             padding: '8px 16px',
             fontSize: '14px',
