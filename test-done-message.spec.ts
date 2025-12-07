@@ -23,12 +23,15 @@ test('Done button shows confirmation message', async ({ page }) => {
   // Wait for table to appear
   await page.waitForSelector('table', { timeout: 10000 });
   
-  // Find a "Done" button - now using plain HTML button
-  const allDoneButtons = page.locator('button:has-text("Done")');
+  // Find a "Done" button using data-testid
+  const allDoneButtons = page.locator('[data-testid^="done-button-"]');
   const buttonCount = await allDoneButtons.count();
-  console.log(`Found ${buttonCount} Done buttons`);
+  console.log(`Found ${buttonCount} Done buttons with data-testid`);
   
-  let doneButton = allDoneButtons.first();
+  // If no buttons with testid, fall back to text
+  let doneButton = buttonCount > 0 
+    ? allDoneButtons.first()
+    : page.locator('button:has-text("Done")').first();
   
   // Check if button is already done (green background)
   const bgColor = await doneButton.evaluate((btn: HTMLButtonElement) => {

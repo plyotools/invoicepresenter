@@ -341,6 +341,7 @@ function App() {
                         data-testid={`done-button-${index}`}
                         onClick={(e) => {
                           e.stopPropagation()
+                          alert('Button clicked!') // Debug: verify click works
                           console.log('Done button clicked, index:', index)
                           const message = getRandomDoneMessage()
                           console.log('Setting message:', message)
