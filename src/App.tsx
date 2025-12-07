@@ -177,87 +177,6 @@ function App() {
   }
 
   const toggleDone = (index: number) => {
-    console.log('=== toggleDone START ===', { index, doneRows: Array.from(doneRows) })
-    const wasDone = doneRows.has(index)
-    const willBeDone = !wasDone
-    
-    console.log('toggleDone called:', { index, wasDone, willBeDone, doneRowsSize: doneRows.size })
-    
-    // Set window flag immediately
-    if (typeof window !== 'undefined') {
-      (window as any).__toggleDoneCalled = true
-      ;(window as any).__toggleDoneIndex = index
-      ;(window as any).__toggleDoneWasDone = wasDone
-      ;(window as any).__toggleDoneWillBeDone = willBeDone
-    }
-    
-    // Show fun confirmation message when marking as done (not when unmarking)
-    // Do this BEFORE state update to ensure it happens
-    if (willBeDone) {
-      try {
-        const message = getRandomDoneMessage()
-        console.log('Setting done message:', message)
-        // Set in window immediately for testing
-        if (typeof window !== 'undefined') {
-          (window as any).__doneMessage = message
-          ;(window as any).__toggleDoneCalled = true
-          ;(window as any).__willBeDone = willBeDone
-          ;(window as any).__wasDone = wasDone
-        }
-        // Set message in React state
-        setDoneMessage(message)
-        // Also set directly in DOM for immediate visibility
-        if (typeof document !== 'undefined') {
-          const alertDiv = document.querySelector('[data-testid="done-message-alert"]') as HTMLElement
-          if (alertDiv) {
-            alertDiv.style.display = 'flex'
-            const messageDiv = alertDiv.querySelector('div > div:last-child')
-            if (messageDiv) {
-              messageDiv.textContent = message
-            }
-          } else {
-            // Create alert if it doesn't exist
-            const container = document.querySelector('.mantine-Stack-root')
-            if (container) {
-              const alert = document.createElement('div')
-              alert.setAttribute('data-testid', 'done-message-alert')
-              alert.style.cssText = 'padding: 12px 16px; background-color: #d4edda; border: 1px solid #c3e6cb; border-radius: 4px; color: #155724; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;'
-              alert.innerHTML = `<strong>💰 Done!</strong><div>${message}</div>`
-              container.insertBefore(alert, container.firstChild?.nextSibling || null)
-            }
-          }
-        }
-        // Hide message after 5 seconds
-        setTimeout(() => {
-          setDoneMessage(null)
-          if (typeof window !== 'undefined') {
-            (window as any).__doneMessage = null
-          }
-          if (typeof document !== 'undefined') {
-            const alertDiv = document.querySelector('[data-testid="done-message-alert"]') as HTMLElement
-            if (alertDiv) {
-              alertDiv.style.display = 'none'
-            }
-          }
-        }, 5000)
-      } catch (error) {
-        console.error('Error getting message:', error)
-        if (typeof window !== 'undefined') {
-          (window as any).__error = String(error)
-        }
-      }
-    } else {
-      console.log('Not showing message - unmarking', { wasDone, willBeDone })
-      // Clear message when unmarking
-      setDoneMessage(null)
-      if (typeof window !== 'undefined') {
-        ;(window as any).__doneMessage = null
-        ;(window as any).__willBeDone = willBeDone
-        ;(window as any).__wasDone = wasDone
-      }
-    }
-    
-    // Update doneRows state
     setDoneRows(prev => {
       const newSet = new Set(prev)
       if (newSet.has(index)) {
@@ -425,21 +344,11 @@ function App() {
                           e.preventDefault()
                           e.stopPropagation()
                         }}
-                        onClick={(e) => {
-                          e.preventDefault()
-                          e.stopPropagation()
-                          const idx = parseInt((e.currentTarget as HTMLButtonElement).dataset.rowIndex || '0')
-                          console.log('HTML button clicked, index:', idx)
-                          
-                          // Call toggleDone
-                          toggleDone(idx)
-                          
-                          // Also set message directly in DOM as backup
+                        onClick={() => {
                           const message = getRandomDoneMessage()
-                          if (typeof window !== 'undefined') {
-                            (window as any).__doneMessage = message
-                          }
                           setDoneMessage(message)
+                          toggleDone(index)
+                          setTimeout(() => setDoneMessage(null), 5000)
                         }}
                         onPointerDown={(e) => {
                           e.preventDefault()
