@@ -56,7 +56,10 @@ function App() {
   const handleFileUpload = async (uploadedFile: File | null) => {
     setError(null)
     setFile(uploadedFile)
-    setTableData([])
+    // Keep dummy data if no file uploaded (for testing)
+    if (uploadedFile) {
+      setTableData([])
+    }
     setDoneRows(new Set())
 
     if (!uploadedFile) {
