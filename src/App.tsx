@@ -264,6 +264,7 @@ function App() {
                     <button
                       type="button"
                       data-testid={`done-button-${index}`}
+                      data-row-index={index}
                       onClick={() => handleDoneClick(index)}
                       style={{
                         padding: '4px 12px',

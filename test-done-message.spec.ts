@@ -23,15 +23,27 @@ test('Done button shows confirmation message', async ({ page }) => {
   // Wait for table to appear
   await page.waitForSelector('table', { timeout: 10000 });
   
-  // Find a "Done" button using data-testid
-  const allDoneButtons = page.locator('[data-testid^="done-button-"]');
-  const buttonCount = await allDoneButtons.count();
-  console.log(`Found ${buttonCount} Done buttons with data-testid`);
+  // Wait a bit more for React to render
+  await page.waitForTimeout(2000);
   
-  // If no buttons with testid, fall back to text
-  let doneButton = buttonCount > 0 
-    ? allDoneButtons.first()
-    : page.locator('button:has-text("Done")').first();
+  // Check if table has data
+  const tableHasData = await page.evaluate(() => {
+    const tbody = document.querySelector('table tbody');
+    return tbody && tbody.children.length > 0;
+  });
+  console.log('Table has data:', tableHasData);
+  
+  // Find a "Done" button - try data-testid first, then fall back to last column
+  let doneButton = page.locator('table tbody tr td:last-child button').first();
+  const buttonCount = await doneButton.count();
+  console.log(`Found ${buttonCount} Done buttons in last column`);
+  
+  if (buttonCount === 0) {
+    // Fallback to any button with "Done" text
+    doneButton = page.locator('button:has-text("Done")').first();
+  }
+  
+  expect(await doneButton.count()).toBeGreaterThan(0);
   
   // Check if button is already done (green background)
   const bgColor = await doneButton.evaluate((btn: HTMLButtonElement) => {
