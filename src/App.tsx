@@ -23,6 +23,23 @@ const SHEEP_REACTIONS = [
   'Du skal faa att for dette... bææ!',
 ]
 
+const SHEEP_SWEARS = [
+  'Faen ta rekneskapane!',
+  'Helsike! Atter ein faktura!',
+  'Dæven! Kven laga dette rotet?',
+  'Pokker ta tala!',
+  'Søren! Eg orkar ikkje meir!',
+  'Svarte kråka! Kven betalar dette?',
+  'Jøss! Det er mykje pengar!',
+  'For ei forbanna rekneskapsbok!',
+  'Herre min hatt, dette er slitsamt!',
+  'Til alle helvete med overtid!',
+  'Fitte! Gløymde eg DEV-nummeret?',
+  'Bysst! Nok ein runde!',
+  'Helsike og fordømt!',
+  'For ei svineri med timar!',
+]
+
 const TRANSLATE_TOOLTIPS = [
   'Trykk for aa tyda denne gaata',
   'Lat Google tolka dette kraakerspraak',
@@ -86,14 +103,25 @@ function BouncingSheep() {
     return () => cancelAnimationFrame(frameRef.current)
   }, [])
 
-  const handleTickle = () => {
-    wiggleRef.current = true
-    wiggleEndRef.current = Date.now() + 1500
-
-    const text = SHEEP_REACTIONS[Math.floor(Math.random() * SHEEP_REACTIONS.length)]
+  const showBubble = (text: string) => {
     setBubble({ text, x: posRef.current.x, y: posRef.current.y - 50 })
     setTimeout(() => setBubble(null), 2500)
   }
+
+  const handleTickle = () => {
+    wiggleRef.current = true
+    wiggleEndRef.current = Date.now() + 1500
+    showBubble(SHEEP_REACTIONS[Math.floor(Math.random() * SHEEP_REACTIONS.length)])
+  }
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (!wiggleRef.current) {
+        showBubble(SHEEP_SWEARS[Math.floor(Math.random() * SHEEP_SWEARS.length)])
+      }
+    }, 10000)
+    return () => clearInterval(interval)
+  }, [])
 
   return (
     <>
@@ -137,16 +165,16 @@ const [showBrideEmoji, setShowBrideEmoji] = useState<Set<number>>(new Set())
   const clickCountRef = useRef(0)
   const clickTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const headerRef = useRef<HTMLDivElement | null>(null)
+  const [headerHeight, setHeaderHeight] = useState(90)
+  const COL_HEADER_H = 36
 
   useEffect(() => {
     const updateHeaderHeight = () => {
       if (headerRef.current) {
-        const h = headerRef.current.getBoundingClientRect().height
-        document.documentElement.style.setProperty('--header-height', `${Math.ceil(h)}px`)
+        setHeaderHeight(Math.ceil(headerRef.current.getBoundingClientRect().height))
       }
     }
     updateHeaderHeight()
-    // Re-measure after fonts load
     document.fonts.ready.then(updateHeaderHeight)
     window.addEventListener('resize', updateHeaderHeight)
     return () => window.removeEventListener('resize', updateHeaderHeight)
@@ -327,8 +355,22 @@ const [showBrideEmoji, setShowBrideEmoji] = useState<Set<number>>(new Set())
         )}
       </div>
 
+      {/* Fixed column headers — shown when data is loaded */}
+      {tableData.length > 0 && (
+        <div className="fixed-col-headers" style={{ top: headerHeight }}>
+          <div className="fch-account">Kven Betalar</div>
+          <div className="fch-date">Dato</div>
+          <div className="fch-summary">Kva Gjeld Saka</div>
+          <div className="fch-desc">Kva Vart Gjort</div>
+          <div className="fch-hours">Timar</div>
+          <div className="fch-name">Kven Sveitte</div>
+          <div className="fch-issue">Saksnøkkel</div>
+          <div className="fch-done">Ferdig</div>
+        </div>
+      )}
+
       {/* Upload section */}
-      <div className="upload-section">
+      <div className="upload-section" style={{ paddingTop: headerHeight + 12 }}>
         <label className="upload-label">Legg fram ditt rekneark, gode sjel</label>
         <FileInput
           placeholder="Vel ei fil fraa skrivebordet (.xlsx, .xls)"
@@ -353,7 +395,7 @@ const [showBrideEmoji, setShowBrideEmoji] = useState<Set<number>>(new Set())
 
       {tableData.length > 0 && (
         <>
-          <div className="ledger-table-wrap">
+          <div className="ledger-table-wrap" style={{ paddingTop: COL_HEADER_H }}>
             <table className="ledger-table">
               <thead>
                 <tr>

@@ -44,17 +44,56 @@ body::before {
   pointer-events: none;
 }
 
-/* === STICKY HEADER === */
+/* === FIXED HEADER === */
 
 .sticky-header {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 100;
   background: linear-gradient(180deg, #f5e6c8 0%, #f0ddb8 100%);
-  padding: 24px 30px 12px 30px;
+  padding: 16px 30px 10px 30px;
   border-bottom: 2px solid rgba(120, 80, 60, 0.15);
   box-shadow: 0 4px 12px rgba(60, 30, 10, 0.08);
 }
+
+.fixed-col-headers {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 90;
+  background: linear-gradient(180deg, #d4b896 0%, #c9a882 100%);
+  border-bottom: 2px solid #8a6b50;
+  display: flex;
+}
+
+.fixed-col-headers > div {
+  font-family: 'IM Fell English SC', serif;
+  font-weight: normal;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  padding: 8px 12px;
+  color: #3a2415;
+  border-right: 1px solid rgba(120, 80, 60, 0.2);
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.fixed-col-headers > div:last-child {
+  border-right: none;
+}
+
+/* Width sync with table columns */
+.fch-account   { width: 13%; }
+.fch-date      { width: 9%; }
+.fch-summary   { width: 15%; }
+.fch-desc      { width: 22%; }
+.fch-hours     { width: 6%; text-align: center; }
+.fch-name      { width: 12%; }
+.fch-issue     { width: 9%; }
+.fch-done      { width: 7%; text-align: center; flex: 1; }
 
 .ledger-title {
   font-family: 'Special Elite', 'Courier New', monospace;
@@ -124,11 +163,19 @@ body::before {
   font-size: 1.05rem;
 }
 
-.ledger-table thead tr th {
-  position: sticky;
-  top: var(--header-height, 110px);
-  z-index: 90;
-  background: linear-gradient(180deg, #d4b896 0%, #c9a882 100%);
+.ledger-table thead {
+  visibility: hidden;
+  height: 0;
+}
+
+.ledger-table thead tr {
+  height: 0;
+}
+
+.ledger-table thead th {
+  padding: 0;
+  height: 0;
+  border: none;
 }
 
 .ledger-table thead th {
@@ -247,7 +294,7 @@ body::before {
 
 /* Upload area */
 .upload-section {
-  padding: 12px 30px 0 30px;
+  padding: 0 30px 12px 30px;
 }
 
 .upload-label {
