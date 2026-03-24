@@ -108,7 +108,6 @@ body::before {
 
 .ledger-table-wrap {
   margin: 0 30px 40px 30px;
-  overflow-x: auto;
 }
 
 .ledger-table {
