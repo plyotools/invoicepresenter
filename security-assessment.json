@@ -1,0 +1,98 @@
+{
+  "version": "1.0",
+  "lastUpdated": null,
+  "items": [
+    {
+      "id": "sensitive-data",
+      "question": "Does your codebase contain any sensitive data directly (e.g. passwords, tokens, API keys, external URLs, json dumps, sql data etc)?",
+      "category": "critical",
+      "status": "not-assessed",
+      "notes": "",
+      "lastChecked": null,
+      "guidance": "You should always use environment variables, github secrets and never expose such credentials to public repos"
+    },
+    {
+      "id": "public-accessibility",
+      "question": "When deployed to some public domain, is it accessible by crawlers, bots and search engines, or the entire solution is protected at least with http-auth layer?",
+      "category": "critical",
+      "status": "not-assessed",
+      "notes": "",
+      "lastChecked": null,
+      "guidance": "Consider if your tool should be publicly accessible or protected with authentication"
+    },
+    {
+      "id": "data-consolidation",
+      "question": "Do you consolidate some sensitive data from various clients of ours into one place (ui, files, docs etc.) that if exposed can be a benefit to our competitors?",
+      "category": "critical",
+      "status": "not-assessed",
+      "notes": "",
+      "lastChecked": null,
+      "guidance": "Assess if aggregated data could provide competitive advantage if exposed"
+    },
+    {
+      "id": "documentation",
+      "question": "Do you have sufficient documentation about your solution so some other colleagues, product or engineering, can contribute to your tool independently?",
+      "category": "non-critical",
+      "status": "not-assessed",
+      "notes": "",
+      "lastChecked": null,
+      "guidance": "Documentation should enable independent contribution by team members"
+    },
+    {
+      "id": "product-portfolio",
+      "question": "Do you expect the tool to become a part of our product portfolio at some point? Is it using Mantine as a primary UI library?",
+      "category": "non-critical",
+      "status": "not-assessed",
+      "notes": "",
+      "lastChecked": null,
+      "guidance": "Consider alignment with product portfolio standards, including UI library consistency"
+    },
+    {
+      "id": "business-logic-docs",
+      "question": "Do you have some business logic rules in your solution that are transforming or filtering the data you use? It should be always maintained with a spec in a form of PRD document describing the feature logic",
+      "category": "non-critical",
+      "status": "not-assessed",
+      "notes": "",
+      "lastChecked": null,
+      "guidance": "Business logic should be documented in PRD format for maintainability"
+    },
+    {
+      "id": "custom-ui-docs",
+      "question": "Do you create some custom UI elements on top of default Mantine that needs some additional Storybook-like documentation?",
+      "category": "non-critical",
+      "status": "not-assessed",
+      "notes": "",
+      "lastChecked": null,
+      "guidance": "Custom UI components should be documented similar to Storybook for reusability"
+    },
+    {
+      "id": "design-system",
+      "question": "Do you use Tailwind or any other Design System tokenising approach to build your UI?",
+      "category": "non-critical",
+      "status": "not-assessed",
+      "notes": "",
+      "lastChecked": null,
+      "guidance": "Design system tokens ensure consistency and maintainability"
+    },
+    {
+      "id": "git-hygiene",
+      "question": "Do you keep a hygiene of meaningful commit messages to your git repo, so anybody can understand the progress by looking at commit history?",
+      "category": "non-critical",
+      "status": "not-assessed",
+      "notes": "",
+      "lastChecked": null,
+      "guidance": "Meaningful commit messages enable understanding of project evolution"
+    },
+    {
+      "id": "private-repo",
+      "question": "Do you keep your code in a private repo?",
+      "category": "critical",
+      "status": "not-assessed",
+      "notes": "",
+      "lastChecked": null,
+      "guidance": "Private repositories protect sensitive code and business logic"
+    }
+  ],
+  "overallStatus": "not-assessed"
+}
+

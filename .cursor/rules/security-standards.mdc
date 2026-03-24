@@ -1,0 +1,189 @@
+# Security Standards and Data Sensitivity Assessment
+
+⚠️ **MANDATORY REQUIREMENT - ALL PROJECTS MUST MAINTAIN SECURITY ASSESSMENT** ⚠️
+
+This document defines the security and data sensitivity standards for all projects managed by the Cursor Control Center. Every project must maintain a `security-assessment.json` file in the project root that reports on these critical security and quality metrics.
+
+## Purpose
+
+Before exposing tools to external and internal stakeholders, we must ensure:
+- No sensitive business data is exposed
+- Proper security measures are in place
+- Documentation standards are met
+- Code quality and maintainability standards are followed
+
+## Security Assessment File
+
+**Location**: `security-assessment.json` in project root
+
+**Maintenance**: AI agents MUST maintain this file and update it when making security-relevant changes.
+
+**Format**: JSON structure with 10 assessment items, each with status (green/yellow/red/not-assessed), notes, and last checked timestamp.
+
+## Assessment Items
+
+### Critical Items (Must be Green for Deployment)
+
+#### 1. Sensitive Data Protection
+**Question**: Does your codebase contain any sensitive data directly (e.g. passwords, tokens, API keys, external URLs, json dumps, sql data etc)?
+
+**Status Guidelines**:
+- **Green**: All credentials use environment variables, GitHub secrets, or secure configuration. No hardcoded secrets in code.
+- **Yellow**: Some credentials are externalized but not all, or using less secure methods.
+- **Red**: Hardcoded passwords, tokens, API keys, or sensitive data in codebase.
+
+**Guidance**: You should always use environment variables, GitHub secrets and never expose such credentials to public repos.
+
+**When to Update**: After adding any authentication, API integration, or configuration changes.
+
+#### 2. Public Accessibility
+**Question**: When deployed to some public domain, is it accessible by crawlers, bots and search engines, or the entire solution is protected at least with http-auth layer?
+
+**Status Guidelines**:
+- **Green**: Protected with http-auth, authentication required, or intentionally public with no sensitive data.
+- **Yellow**: Partially protected or unclear access controls.
+- **Red**: Fully accessible to crawlers/bots/search engines with sensitive data exposed.
+
+**Guidance**: Consider if your tool should be publicly accessible or protected with authentication.
+
+**When to Update**: After deployment configuration changes or when changing access controls.
+
+#### 3. Data Consolidation Risks
+**Question**: Do you consolidate some sensitive data from various clients of ours into one place (ui, files, docs etc.) that if exposed can be a benefit to our competitors?
+
+**Status Guidelines**:
+- **Green**: No sensitive aggregated data, or data is properly secured and access-controlled.
+- **Yellow**: Some aggregated data exists but is protected.
+- **Red**: Aggregated sensitive client data that could benefit competitors if exposed.
+
+**Guidance**: Assess if aggregated data could provide competitive advantage if exposed.
+
+**When to Update**: After adding data aggregation features or when consolidating data from multiple sources.
+
+#### 4. Private Repository
+**Question**: Do you keep your code in a private repo?
+
+**Status Guidelines**:
+- **Green**: Code is in a private repository.
+- **Yellow**: Repository exists but visibility is unclear.
+- **Red**: Code is in a public repository with sensitive business logic.
+
+**Guidance**: Private repositories protect sensitive code and business logic.
+
+**When to Update**: When repository visibility changes or when creating new repositories.
+
+### Non-Critical Items (Quality and Maintainability)
+
+#### 5. Documentation Quality
+**Question**: Do you have sufficient documentation about your solution so some other colleagues, product or engineering, can contribute to your tool independently?
+
+**Status Guidelines**:
+- **Green**: Comprehensive documentation exists (README, architecture docs, setup guides).
+- **Yellow**: Some documentation exists but incomplete.
+- **Red**: Minimal or no documentation.
+
+**Guidance**: Documentation should enable independent contribution by team members.
+
+**When to Update**: After major feature additions or when documentation is improved.
+
+#### 6. Product Portfolio Integration
+**Question**: Do you expect the tool to become a part of our product portfolio at some point? Is it using Mantine as a primary UI library?
+
+**Status Guidelines**:
+- **Green**: Using Mantine as primary UI library, aligned with portfolio standards.
+- **Yellow**: Using Mantine but not consistently, or partially aligned.
+- **Red**: Not using Mantine or not aligned with portfolio standards.
+
+**Guidance**: Consider alignment with product portfolio standards, including UI library consistency.
+
+**When to Update**: When changing UI libraries or when aligning with portfolio standards.
+
+#### 7. Business Logic Documentation
+**Question**: Do you have some business logic rules in your solution that are transforming or filtering the data you use? It should be always maintained with a spec in a form of PRD document describing the feature logic.
+
+**Status Guidelines**:
+- **Green**: Business logic is documented in PRD format or equivalent specification.
+- **Yellow**: Some business logic is documented but not comprehensive.
+- **Red**: Business logic exists but is not documented.
+
+**Guidance**: Business logic should be documented in PRD format for maintainability.
+
+**When to Update**: After adding or modifying business logic rules.
+
+#### 8. Custom UI Documentation
+**Question**: Do you create some custom UI elements on top of default Mantine that needs some additional Storybook-like documentation?
+
+**Status Guidelines**:
+- **Green**: Custom UI components are documented (Storybook, component docs, or equivalent).
+- **Yellow**: Some custom components are documented.
+- **Red**: Custom UI components exist but are not documented.
+
+**Guidance**: Custom UI components should be documented similar to Storybook for reusability.
+
+**When to Update**: After creating or modifying custom UI components.
+
+#### 9. Design System Usage
+**Question**: Do you use Tailwind or any other Design System tokenising approach to build your UI?
+
+**Status Guidelines**:
+- **Green**: Using design system tokens (Tailwind, CSS variables, theme tokens, etc.).
+- **Yellow**: Partially using design system tokens.
+- **Red**: Not using design system tokens, hardcoded values.
+
+**Guidance**: Design system tokens ensure consistency and maintainability.
+
+**When to Update**: When adopting or changing design system approach.
+
+#### 10. Git Commit Hygiene
+**Question**: Do you keep a hygiene of meaningful commit messages to your git repo, so anybody can understand the progress by looking at commit history?
+
+**Status Guidelines**:
+- **Green**: Consistent, meaningful commit messages following conventions.
+- **Yellow**: Most commits are meaningful but inconsistent.
+- **Red**: Commit messages are unclear or non-descriptive.
+
+**Guidance**: Meaningful commit messages enable understanding of project evolution.
+
+**When to Update**: When improving commit message practices.
+
+## Agent Responsibilities
+
+AI agents working on projects MUST:
+
+1. **Maintain `security-assessment.json`**: Keep this file up-to-date in the project root
+2. **Update After Security Changes**: When making changes that affect security (adding auth, API keys, deployment config, etc.), update the relevant assessment items
+3. **Review Before Releases**: Before releasing or deploying, review and update the security assessment
+4. **Be Honest**: Report actual status, not aspirational status - this helps identify risks
+5. **Add Notes**: Include notes explaining the status, especially for yellow/red items
+6. **Run "assess" command**: When user says "assess" or "assess security", perform a complete security evaluation and update security-assessment.json with results
+
+## Status Values
+
+- **green**: Requirement is met, no issues
+- **yellow**: Partially met or needs attention
+- **red**: Requirement not met, security risk or quality issue
+- **not-assessed**: Not yet evaluated (default for new projects)
+
+## Traffic Light Indicator
+
+The Control Center dashboard displays a traffic light indicator for each project:
+
+- **🔴 Red**: Any critical item is red or not-assessed - **DO NOT DEPLOY**
+- **🟡 Yellow**: All critical items are green, but non-critical items have issues
+- **🟢 Green**: All critical items are green - safe for deployment
+
+## Integration with Other Rules
+
+This security assessment works alongside:
+- **`agent-comm.mdc`** - Communication rules requiring agents to maintain security assessment
+- **`coding-principles.mdc`** - Coding standards that support security best practices
+- **`release.mdc`** - Release procedures that should check security assessment
+
+## Version and Updates
+
+This is the master Security Standards file. It is synced to all projects via the Control Center.
+
+When security standards are updated:
+1. Rules version is bumped in `templates/rules-version.json`
+2. Run `ccc sync-all-projects` to distribute to all existing projects
+3. New projects automatically get latest standards when created or scanned

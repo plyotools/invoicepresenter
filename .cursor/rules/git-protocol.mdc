@@ -1,0 +1,309 @@
+# Git Save/Restore Protocol
+
+⚠️ **MANDATORY RULES - YOU MUST READ AND FOLLOW THESE** ⚠️
+
+This protocol ensures reliable "Save Main" and "Restore Main" operations that preserve complete project state. All agents MUST follow this protocol.
+
+**CRITICAL ENFORCEMENT**:
+- These rules are MANDATORY and must be respected in ALL chats and ALL projects
+- They are automatically distributed to all projects via the Control Center sync process
+- The `.cursorrules` file in the project root explicitly requires you to read these rules
+- Violating these rules is not acceptable - they ensure reliable git operations
+
+## Critical Understanding
+
+**Git Commit = Snapshot of TRACKED Files Only**
+
+- Git only saves files that are explicitly added with `git add`
+- Untracked files are NOT saved in commits
+- `.gitignore` files are never committed
+- When user says "save main", they expect EVERYTHING to be saved
+
+## Protocol: "Save Main in Git"
+
+### User Prompt Recognition:
+
+- "Save main"
+- "Save main in git"
+- "Save main in git - commit all files including code, data files, images, and project folders"
+
+### Agent Action Plan (MANDATORY - Execute in Order):
+
+1. **Check Current State:**
+
+   ```bash
+   git status --short
+   git ls-files | grep -E "screenshot|metadata\.json|instances\.json"
+   ```
+
+2. **Verify What Will Be Saved:**
+
+   - Count tracked files: `git ls-files | wc -l`
+   - Count untracked files: `git status --short | grep "^??" | wc -l`
+   - Check if images are tracked: `git ls-files | grep -E "\.(png|jpg|jpeg|webp)$"`
+   - Check if data files are tracked: `git ls-files | grep -E "instances\.json|features\.json"`
+
+3. **Warn User About Untracked Files:**
+
+   - Report: "⚠️ Warning: [X] images are untracked and won't be saved. These will NOT be in the commit."
+   - Report: "⚠️ Warning: [X] project folders are untracked and won't be saved."
+   - Show list of untracked files if significant
+
+4. **Stage ALL Changes:**
+
+   ```bash
+   git add -A
+   ```
+
+5. **Show What Will Be Committed:**
+
+   ```bash
+   git status --short | head -30
+   git diff --cached --stat
+   ```
+
+6. **Commit:**
+
+   ```bash
+   git commit -m "Save main version"
+   ```
+
+7. **Verify Commit Contains Everything:**
+
+   ```bash
+   git show HEAD --stat --oneline
+   git ls-tree -r HEAD --name-only | wc -l
+   git ls-tree -r HEAD --name-only | grep -E "screenshot|metadata\.json|instances\.json" | wc -l
+   ```
+
+8. **Report to User (MANDATORY):**
+
+   - "✅ Saved to commit [HASH]"
+   - "✅ Includes: [X] code files, [Y] data files, [Z] images, [W] project folders"
+   - "⚠️ Missing from commit (untracked): [list if any]"
+   - "📝 Commit hash: [FULL_HASH]"
+
+### Error Handling:
+
+- If images aren't tracked: Warn user explicitly and show count
+- If commit fails: Show error, suggest checking .gitignore or file sizes
+- Always verify what was actually committed before reporting success
+
+## Protocol: "Restore Main" or "Restore to Commit X"
+
+### User Prompt Recognition:
+
+- "Restore main"
+- "Restore to commit [HASH]"
+- "Restore to commit [HASH] - restore all files"
+
+### Agent Action Plan (MANDATORY - Execute in Order):
+
+1. **Identify Commit:**
+
+   - If "main": Find latest commit with message containing "Save main version"
+
+     ```bash
+     git log --all --oneline --grep="Save main" | head -1
+     ```
+
+   - If hash provided: Verify it exists
+
+     ```bash
+     git show [HASH] --oneline
+     ```
+
+   - Show commit: `git log --oneline -1 [HASH]`
+
+2. **Show What's in That Commit (REPORT TO USER):**
+
+   ```bash
+   git show [HASH] --stat
+   git ls-tree -r [HASH] --name-only | wc -l
+   git ls-tree -r [HASH] --name-only | grep -E "screenshot|metadata\.json|instances\.json" | wc -l
+   ```
+
+   Report to user: "Commit [HASH] contains: [X] total files, [Y] images, [Z] data files"
+
+3. **Warn User About Consequences (MANDATORY):**
+
+   - "⚠️ This will overwrite ALL tracked files in working directory"
+   - "⚠️ Current changes will be lost"
+   - "ℹ️ Untracked files will remain unchanged"
+   - Ask: "Proceed with restore?"
+
+4. **Restore ALL Tracked Files:**
+
+   ```bash
+   git checkout [HASH] -- .
+   ```
+
+5. **Verify Completeness (MANDATORY):**
+
+   ```bash
+   git diff --name-status [HASH] HEAD
+   ```
+
+   - Should only show new files (marked with "A" - Added)
+   - No modified files (no "M") = restore complete
+   - Report any differences found
+
+6. **Report to User (MANDATORY):**
+
+   - "✅ Restored all files from commit [HASH]"
+   - "✅ Restored: [X] code files, [Y] data files, [Z] images"
+   - "✅ Verification: All tracked files match commit [HASH]"
+   - "ℹ️ Untracked files unchanged: [list if any]"
+
+### Critical Rules:
+
+- **NEVER mix commits** - use ONE commit for everything
+- **NEVER cherry-pick files** - restore ALL tracked files from the commit
+- **NEVER assume** - always verify what's in the commit first
+- **ALWAYS verify** - check file counts, key features exist after restore
+- **ALWAYS report** - tell user exactly what was restored and what's missing
+
+## Protocol: "Restore to Specific State"
+
+### User Prompt Examples:
+
+- "Restore to the state with counter bars and 87 projects"
+- "I want commit 3fd0587 with simplified badge styling"
+
+### Agent Action Plan:
+
+1. Find commit(s) matching the description
+
+   ```bash
+   git log --all --oneline --grep="counter\|build step\|87" | head -10
+   ```
+
+2. Show user what's in those commits
+
+3. Ask which commit to use
+
+4. Restore everything from that commit FIRST
+
+5. If additional changes needed (like simplified styling), apply them AFTER restore as separate step
+
+## Communication Rules
+
+### DO (MANDATORY):
+
+- ✅ Explain what you'll do BEFORE doing it
+- ✅ Show what's in commits BEFORE restoring
+- ✅ Warn about untracked files explicitly
+- ✅ Warn about overwriting changes before restore
+- ✅ Verify and report after every operation
+- ✅ Ask for confirmation if consequences are significant
+- ✅ Report commit hash after save
+- ✅ Verify completeness after restore
+
+### DON'T (FORBIDDEN):
+
+- ❌ Make assumptions about what to keep/restore
+- ❌ Mix files from different commits
+- ❌ Restore without explaining consequences
+- ❌ Skip verification steps
+- ❌ Act when user asks for explanation only
+- ❌ Restore without showing what's in the commit first
+- ❌ Report success without verification
+
+## Simple User Prompts (Recommended for Users)
+
+**To Save:**
+
+- "Save main"
+- "Save main in git"
+
+**To Restore:**
+
+- "Restore main"
+- "Restore to commit [HASH]"
+
+**For Specific State:**
+
+- "Restore to commit 3fd0587"
+- "I want the state with counter bars"
+
+## Verification Checklist (MANDATORY)
+
+After EVERY save operation:
+
+- [ ] Verified what's tracked vs untracked
+- [ ] Warned user about untracked files
+- [ ] Committed all tracked changes
+- [ ] Verified commit contains expected files
+- [ ] Reported commit hash to user
+- [ ] Reported what was saved and what's missing
+
+After EVERY restore operation:
+
+- [ ] Identified correct commit
+- [ ] Shown user what's in the commit
+- [ ] Warned about overwriting changes
+- [ ] Restored all tracked files
+- [ ] Verified all files match commit (no "M" in git diff)
+- [ ] Reported what was restored
+- [ ] Reported any untracked files that remain
+
+## Key Principle
+
+**One Commit = One Complete State**
+
+- Each commit represents a complete snapshot
+- When restoring, restore EVERYTHING from that commit
+- Don't cherry-pick or mix commits
+- If you need changes from multiple commits, restore from one, then apply changes as separate steps
+
+## Integration with Other Rules
+
+This Git Protocol file works in conjunction with:
+- **`agent-comm.mdc`** - Communication and workflow rules (READ THIS ALONGSIDE git-protocol)
+- **`coding-principles.mdc`** - Coding standards and best practices
+- `launch.mdc` - Launch command rules
+- `release.mdc` - Release command rules
+- `ship.mdc` - Ship It command rules
+
+**CRITICAL**: `git-protocol.mdc` and `agent-comm.mdc` work together:
+- **agent-comm.mdc**: Defines HOW to recognize "Save Main" and "Restore Main" commands
+- **git-protocol.mdc**: Defines WHAT steps to follow for git operations
+- **Both are mandatory** - read and follow both files together
+
+## Version and Updates
+
+This is the master Git Protocol file. It is synced to all projects via the Control Center.
+
+### For Individual Projects
+When protocol is updated, sync a specific project using:
+```bash
+ccc sync-project --path . --services web,api
+```
+
+### For All Projects
+To sync protocol to ALL projects at once:
+```bash
+ccc sync-all-projects --services web,api
+```
+
+### Automatic Distribution
+- **New projects**: Automatically get latest protocol when created or scanned
+- **Existing projects**: Get updated protocol when `ccc scan-projects` is run (unless `--no-sync` is used)
+- **Version tracking**: The version of rules is tracked in `.cursor/control-center.json` in each project
+- **Respect in all chats**: This protocol applies to ALL agent interactions in ALL projects - it is mandatory
+
+### When Protocol Is Updated in Control Center
+1. Rules version is bumped in `templates/rules-version.json`
+2. **Run `ccc sync-all-projects`** to distribute to all existing projects
+3. **The command reports**: How many projects were updated (e.g., "Rules updated: 5 project(s)")
+4. New projects will automatically get the latest protocol
+5. Agents in all chats will respect the updated protocol once synced
+
+### Agency Principle: Automatic Protocol Distribution
+**CRITICAL**: Whenever git-protocol rules are updated in Control Center:
+- **MUST sync to all projects**: Run `ccc sync-all-projects` to apply updates everywhere
+- **Report results**: The command shows how many projects received the updates
+- **One update applies everywhere**: No need to update each project individually
+- **Automatic propagation**: Protocol updates should immediately propagate to all projects
+
+
