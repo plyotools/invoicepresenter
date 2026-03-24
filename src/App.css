@@ -119,14 +119,14 @@ body::before {
   font-size: 0.92rem;
 }
 
-.ledger-table thead {
+.ledger-table thead tr th {
   position: sticky;
-  top: 120px; /* below the sticky header */
+  top: var(--header-height, 110px);
   z-index: 90;
+  background: linear-gradient(180deg, #d4b896 0%, #c9a882 100%);
 }
 
 .ledger-table thead th {
-  background: linear-gradient(180deg, #d4b896 0%, #c9a882 100%);
   color: #3a2415;
   font-family: 'IM Fell English SC', serif;
   font-weight: normal;
@@ -201,16 +201,19 @@ body::before {
 
 /* Issue key link */
 .issue-link {
-  color: #6b3a20;
-  font-weight: 600;
+  color: #5c2e14;
+  font-family: 'Special Elite', monospace;
+  font-size: 0.95rem;
+  font-weight: bold;
   text-decoration: none;
   border-bottom: 1px dashed rgba(120, 80, 60, 0.4);
   transition: all 0.2s;
+  letter-spacing: 0.02em;
 }
 
 .issue-link:hover {
-  color: #8b4513;
-  border-bottom-color: #8b4513;
+  color: #8b2500;
+  border-bottom-color: #8b2500;
 }
 
 /* Done button */

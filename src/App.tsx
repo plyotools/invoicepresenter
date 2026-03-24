@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
-import { Stack, FileInput, Group, ActionIcon, Tooltip, Switch, Modal, Textarea, Button, Text, ScrollArea, TextInput } from '@mantine/core'
+import { Stack, FileInput, Group, ActionIcon, Tooltip, Modal, Textarea, Button, Text, ScrollArea, TextInput } from '@mantine/core'
 import { IconCopy, IconCheck, IconX } from '@tabler/icons-react'
 import { getRandomDoneMessage, doneMessages, setDoneMessages } from './doneMessages'
 import { parseExcelFile } from './utils/excelParser'
@@ -121,8 +121,7 @@ function App() {
   const [floatingMessage, setFloatingMessage] = useState<string | null>(null)
   const [isFadingOut, setIsFadingOut] = useState(false)
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null)
-  const [messagesEnabled, setMessagesEnabled] = useState(true)
-  const [showBrideEmoji, setShowBrideEmoji] = useState<Set<number>>(new Set())
+const [showBrideEmoji, setShowBrideEmoji] = useState<Set<number>>(new Set())
   const messageTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const fadeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [messagesModalOpen, setMessagesModalOpen] = useState(false)
@@ -137,6 +136,21 @@ function App() {
   const [newMessagesText, setNewMessagesText] = useState('')
   const clickCountRef = useRef(0)
   const clickTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const headerRef = useRef<HTMLDivElement | null>(null)
+
+  useEffect(() => {
+    const updateHeaderHeight = () => {
+      if (headerRef.current) {
+        document.documentElement.style.setProperty(
+          '--header-height',
+          `${headerRef.current.offsetHeight}px`
+        )
+      }
+    }
+    updateHeaderHeight()
+    window.addEventListener('resize', updateHeaderHeight)
+    return () => window.removeEventListener('resize', updateHeaderHeight)
+  }, [])
 
   const handleFileChange = async (file: File | null) => {
     setFile(file)
@@ -292,29 +306,21 @@ function App() {
       <BouncingSheep />
 
       {/* Sticky header with title + done toast */}
-      <div className="sticky-header" style={{ position: 'relative' }}>
+      <div ref={headerRef} className="sticky-header" style={{ position: 'relative' }}>
         <Group justify="space-between" align="flex-start">
           <div>
             <h1 className="ledger-title">💰 O Store Rekneskapsbok</h1>
             <div className="ledger-subtitle">Anno MMXXV — Eit Oversyn yver Arbeid og Rekningar</div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <Switch
-              label="Meldingar"
-              checked={messagesEnabled}
-              onChange={(e) => setMessagesEnabled(e.currentTarget.checked)}
-              styles={{ label: { fontFamily: "'IM Fell English', serif", color: '#6b4a30', fontStyle: 'italic' } }}
-            />
-            <div
-              onClick={handleInvisibleAreaClick}
-              style={{ width: 16, height: 16, cursor: 'pointer' }}
-              title="Trippeltrykk for aa styra meldingane"
-            />
-          </div>
+          <div
+            onClick={handleInvisibleAreaClick}
+            style={{ width: 16, height: 16, cursor: 'pointer' }}
+            title="Trippeltrykk for aa styra meldingane"
+          />
         </Group>
 
         {/* Done toast overlaid on header */}
-        {floatingMessage && messagesEnabled && (
+        {floatingMessage && (
           <div className={`done-toast ${isFadingOut ? 'fade-out' : ''}`}>
             {floatingMessage}
           </div>
