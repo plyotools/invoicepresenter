@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
-import { FileInput, Group, ActionIcon, Tooltip, Modal, Textarea, Button, Text, ScrollArea, TextInput } from '@mantine/core'
+import { Stack, FileInput, Group, ActionIcon, Tooltip, Modal, Textarea, Button, Text, ScrollArea, TextInput } from '@mantine/core'
 import { IconCopy, IconCheck, IconX } from '@tabler/icons-react'
 import { getRandomDoneMessage, doneMessages, setDoneMessages } from './doneMessages'
 import { parseExcelFile } from './utils/excelParser'
