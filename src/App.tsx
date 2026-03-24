@@ -141,13 +141,13 @@ const [showBrideEmoji, setShowBrideEmoji] = useState<Set<number>>(new Set())
   useEffect(() => {
     const updateHeaderHeight = () => {
       if (headerRef.current) {
-        document.documentElement.style.setProperty(
-          '--header-height',
-          `${headerRef.current.offsetHeight}px`
-        )
+        const h = headerRef.current.getBoundingClientRect().height
+        document.documentElement.style.setProperty('--header-height', `${Math.ceil(h)}px`)
       }
     }
     updateHeaderHeight()
+    // Re-measure after fonts load
+    document.fonts.ready.then(updateHeaderHeight)
     window.addEventListener('resize', updateHeaderHeight)
     return () => window.removeEventListener('resize', updateHeaderHeight)
   }, [])

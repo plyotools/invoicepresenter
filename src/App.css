@@ -1,5 +1,11 @@
 /* === OLD LEDGER AESTHETIC === */
 
+html, body, #root {
+  overflow-x: visible;
+  overflow-y: visible;
+  height: auto;
+}
+
 body {
   margin: 0;
   padding: 0;
