@@ -1,104 +1,344 @@
-/* App styles */
+/* === OLD LEDGER AESTHETIC === */
 
-.done-alert {
-  background-color: #d4edda;
-  border: 1px solid #c3e6cb;
-  color: #155724;
-  padding: 12px 16px;
-  border-radius: 4px;
-  margin-top: 20px;
-  font-size: 16px;
+body {
+  margin: 0;
+  padding: 0;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 31px,
+      rgba(120, 80, 60, 0.08) 31px,
+      rgba(120, 80, 60, 0.08) 32px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 199px,
+      rgba(120, 80, 60, 0.06) 199px,
+      rgba(120, 80, 60, 0.06) 200px
+    ),
+    linear-gradient(135deg, #f5e6c8 0%, #f0ddb8 25%, #ede0c0 50%, #f2e4c4 75%, #f5e8cc 100%);
+  background-attachment: fixed;
+  min-height: 100vh;
+  font-family: 'IM Fell English', 'Georgia', serif;
+  color: #3a2415;
 }
 
-/* Prevent text overlap in table cells */
-table {
-  table-layout: fixed;
+/* Red margin line like real ledger paper */
+body::before {
+  content: '';
+  position: fixed;
+  left: 60px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: rgba(180, 60, 60, 0.2);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* === STICKY HEADER === */
+
+.sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: linear-gradient(180deg, #f5e6c8 0%, #f0ddb8 100%);
+  padding: 24px 30px 12px 30px;
+  border-bottom: 2px solid rgba(120, 80, 60, 0.15);
+  box-shadow: 0 4px 12px rgba(60, 30, 10, 0.08);
+}
+
+.ledger-title {
+  font-family: 'Special Elite', 'Courier New', monospace;
+  font-size: 2.8rem;
+  color: #5c2e14;
+  text-shadow: 1px 1px 0 rgba(0,0,0,0.05);
+  letter-spacing: 0.02em;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.ledger-subtitle {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  color: #8a6b50;
+  font-size: 1rem;
+  margin-top: 4px;
+}
+
+/* === DONE TOAST (overlays title area) === */
+
+.done-toast {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(92, 46, 20, 0.92);
+  color: #f5e6c8;
+  padding: 12px 28px;
+  border-radius: 6px;
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 1.05rem;
+  white-space: nowrap;
+  z-index: 200;
+  pointer-events: none;
+  animation: toastIn 0.3s ease-out;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.2);
+  border: 1px solid rgba(245, 230, 200, 0.3);
+}
+
+.done-toast.fade-out {
+  animation: toastOut 0.5s ease-out forwards;
+}
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0.95); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes toastOut {
+  from { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  to { opacity: 0; transform: translate(-50%, -50%) scale(0.95); }
+}
+
+/* === TABLE === */
+
+.ledger-table-wrap {
+  margin: 0 30px 40px 30px;
+  overflow-x: auto;
+}
+
+.ledger-table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
+  font-family: 'IM Fell English', serif;
+  font-size: 0.92rem;
 }
 
-table td {
-  overflow-wrap: break-word;
-  word-wrap: break-word;
-  word-break: break-word;
-  hyphens: auto;
+.ledger-table thead {
+  position: sticky;
+  top: 120px; /* below the sticky header */
+  z-index: 90;
+}
+
+.ledger-table thead th {
+  background: linear-gradient(180deg, #d4b896 0%, #c9a882 100%);
+  color: #3a2415;
+  font-family: 'IM Fell English SC', serif;
+  font-weight: normal;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  padding: 10px 12px;
+  border-bottom: 2px solid #8a6b50;
+  border-right: 1px solid rgba(120, 80, 60, 0.2);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.ledger-table thead th:last-child {
+  border-right: none;
+}
+
+.ledger-table tbody tr {
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid rgba(120, 80, 60, 0.1);
+}
+
+.ledger-table tbody tr:nth-child(even) {
+  background-color: rgba(210, 180, 140, 0.1);
+}
+
+.ledger-table tbody tr:hover {
+  background-color: rgba(210, 180, 140, 0.2);
+}
+
+.ledger-table tbody tr.row-done {
+  background-color: rgba(100, 140, 80, 0.12) !important;
+}
+
+.ledger-table tbody td {
+  padding: 10px 12px;
   vertical-align: top;
+  border-right: 1px solid rgba(120, 80, 60, 0.08);
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
-/* Work description cell specific styling */
-table td:nth-child(4) {
-  max-width: 0;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
+.ledger-table tbody td:last-child {
+  border-right: none;
 }
 
-/* Narrow columns for Issue Key, Hours, and Done */
-table th:nth-child(2),
-table td:nth-child(2) {
-  width: 8%;
+/* Column widths */
+.col-account { width: 13%; }
+.col-date { width: 9%; }
+.col-summary { width: 15%; }
+.col-description { width: 22%; }
+.col-hours { width: 6%; text-align: center; }
+.col-name { width: 12%; }
+.col-issue { width: 9%; }
+.col-done { width: 7%; text-align: center; }
+
+/* Work description - clickable for translate */
+.work-desc-link {
+  color: #5c2e14;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-decoration-color: rgba(120, 80, 60, 0.4);
+  text-underline-offset: 3px;
+  cursor: pointer;
+  transition: color 0.2s;
 }
 
-table th:nth-child(5),
-table td:nth-child(5) {
-  width: 6%;
+.work-desc-link:hover {
+  color: #8b4513;
+  text-decoration-color: rgba(120, 80, 60, 0.7);
 }
 
-table th:nth-child(8),
-table td:nth-child(8) {
-  width: 8%;
+/* Issue key link */
+.issue-link {
+  color: #6b3a20;
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px dashed rgba(120, 80, 60, 0.4);
+  transition: all 0.2s;
 }
 
-/* Floating message at bottom of screen */
-.floating-message {
+.issue-link:hover {
+  color: #8b4513;
+  border-bottom-color: #8b4513;
+}
+
+/* Done button */
+.done-btn {
+  font-family: 'IM Fell English', serif;
+  background: transparent;
+  border: 1.5px solid rgba(120, 80, 60, 0.3);
+  color: #5c2e14;
+  padding: 5px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+}
+
+.done-btn:hover {
+  background: rgba(120, 80, 60, 0.08);
+  border-color: rgba(120, 80, 60, 0.5);
+}
+
+.done-btn.is-done {
+  background: rgba(100, 140, 80, 0.25);
+  border-color: rgba(80, 120, 60, 0.5);
+  color: #3a5a2a;
+}
+
+/* Upload area */
+.upload-section {
+  padding: 12px 30px 0 30px;
+}
+
+.upload-label {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  color: #6b4a30;
+  font-size: 0.95rem;
+  margin-bottom: 6px;
+  display: block;
+}
+
+/* Error alert */
+.ledger-error {
+  margin: 12px 30px;
+  padding: 12px 18px;
+  background: rgba(180, 60, 60, 0.08);
+  border: 1px solid rgba(180, 60, 60, 0.25);
+  border-radius: 4px;
+  color: #8b2020;
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+}
+
+/* Copy icon in description */
+.copy-icon-wrap {
+  position: absolute;
+  top: 10px;
+  right: 8px;
+  opacity: 0.4;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+
+.ledger-table tbody td:hover .copy-icon-wrap {
+  opacity: 0.8;
+}
+
+/* === SHEEP === */
+
+.sheep {
   position: fixed;
-  bottom: 30px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #2d3748;
-  color: white;
-  padding: 16px 24px;
-  border-radius: 8px;
-  font-weight: 500;
-  font-size: 15px;
-  z-index: 1000;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  animation: slideUp 0.3s ease-out;
-  max-width: 90%;
-  text-align: center;
-  word-wrap: break-word;
+  font-size: 40px;
+  z-index: 9999;
+  cursor: pointer;
+  user-select: none;
+  filter: drop-shadow(2px 4px 4px rgba(0,0,0,0.15));
+  transition: filter 0.2s;
 }
 
-@keyframes slideUp {
-  from {
-    transform: translateX(-50%) translateY(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(-50%) translateY(0);
-    opacity: 1;
-  }
+.sheep:hover {
+  filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.25));
 }
 
-.floating-message.fade-out {
-  animation: fadeOut 0.5s ease-out forwards;
+.sheep-bubble {
+  position: fixed;
+  z-index: 10000;
+  background: rgba(92, 46, 20, 0.9);
+  color: #f5e6c8;
+  padding: 6px 14px;
+  border-radius: 10px;
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.85rem;
+  pointer-events: none;
+  white-space: nowrap;
+  animation: bubbleIn 0.2s ease-out;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
-@keyframes fadeOut {
-  from {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateX(-50%) translateY(20px);
-  }
+@keyframes bubbleIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* Responsive table */
+@keyframes sheepWiggle {
+  0%, 100% { transform: rotate(0deg); }
+  15% { transform: rotate(12deg); }
+  30% { transform: rotate(-10deg); }
+  45% { transform: rotate(8deg); }
+  60% { transform: rotate(-6deg); }
+  75% { transform: rotate(4deg); }
+  90% { transform: rotate(-2deg); }
+}
+
+/* === TOTAL HOURS === */
+
+.total-hours {
+  text-align: right;
+  padding: 12px 30px;
+  font-family: 'IM Fell English SC', serif;
+  font-size: 1.1rem;
+  color: #5c2e14;
+  letter-spacing: 0.03em;
+}
+
+/* Responsive */
 @media (max-width: 768px) {
-  div[style*="margin: 0 30px"] {
-    margin: 0 15px !important;
-    width: calc(100% - 30px) !important;
-  }
+  .ledger-table-wrap { margin: 0 10px 40px 10px; }
+  .sticky-header { padding: 16px 10px 8px 10px; }
+  .upload-section { padding: 8px 10px 0 10px; }
+  .ledger-title { font-size: 1.8rem; }
 }
-
