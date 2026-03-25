@@ -334,7 +334,7 @@ const [showBrideEmoji, setShowBrideEmoji] = useState<Set<number>>(new Set())
       <BouncingSheep />
 
       {/* Sticky header with title + done toast */}
-      <div ref={headerRef} className="sticky-header" style={{ position: 'relative' }}>
+      <div ref={headerRef} className="sticky-header">
         <Group justify="space-between" align="flex-start">
           <div>
             <h1 className="ledger-title">💰 O Store Rekneskapsbok</h1>
